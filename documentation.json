@@ -1,5 +1,5 @@
 {
-  "name": "Documentation",
+  "name": "Erase & Rewrite",
   "colors": {
     "light": {
       "brand": "#F97316"
@@ -13,7 +13,12 @@
       {
         "group": "Start here",
         "icon": "home",
-        "pages": []
+        "pages": [
+          {
+            "title": "Erase & Rewrite",
+            "path": "home"
+          }
+        ]
       },
       {
         "group": "User manual",
@@ -54,7 +59,8 @@
             "title": "Troubleshooting",
             "path": "user-manual/troubleshooting"
           }
-        ]
+        ],
+        "icon": "book-open"
       },
       {
         "group": "Windows grid guides",
@@ -67,7 +73,8 @@
             "path": "guides/win/win-go-editable-property-grids",
             "title": "Implementing a Two-Column Config Grid in Go on Windows using walk"
           }
-        ]
+        ],
+        "icon": "table"
       },
       {
         "group": "Specifications",
@@ -120,7 +127,8 @@
             "path": "specs/true-grid-related-sources",
             "title": "True Grid Implementation — Related Sources (Current)"
           }
-        ]
+        ],
+        "icon": "file-text"
       },
       {
         "group": "Verification",
@@ -142,7 +150,8 @@
             "path": "verification/settings-grid-qt-strategy",
             "title": "Settings grid Qt control strategy (SG-09)"
           }
-        ]
+        ],
+        "icon": "shield-check"
       },
       {
         "group": "Reference",
@@ -159,7 +168,8 @@
             "path": "folder-structure",
             "title": "Repository folder structure (rules)"
           }
-        ]
+        ],
+        "icon": "book"
       },
       {
         "group": "Help",
@@ -168,7 +178,8 @@
             "path": "CONTRIBUTORS",
             "title": "Contributors — Erase & Rewrite"
           }
-        ]
+        ],
+        "icon": "users"
       }
     ]
   },
@@ -181,5 +192,69 @@
     "library": "lucide"
   },
   "template": "classic",
-  "initialRoute": "CONTRIBUTORS"
+  "initialRoute": "home",
+  "navbar": {
+    "actions": {
+      "primary": {
+        "title": "Read the user manual",
+        "link": "/user-manual/overview"
+      },
+      "links": [
+        {
+          "title": "Functional specification",
+          "link": "/specs/funcspec"
+        },
+        {
+          "title": "GitHub",
+          "link": "https://github.com/aka-author/WhatToWipe"
+        }
+      ]
+    }
+  },
+  "footer": {
+    "links": [
+      {
+        "header": "Documentation",
+        "items": [
+          {
+            "label": "User manual",
+            "href": "/user-manual/overview"
+          },
+          {
+            "label": "Functional specification",
+            "href": "/specs/funcspec"
+          },
+          {
+            "label": "Build and installer workflow",
+            "href": "/build-workflow"
+          }
+        ]
+      },
+      {
+        "header": "Repository",
+        "items": [
+          {
+            "label": "Source code",
+            "href": "https://github.com/aka-author/WhatToWipe"
+          },
+          {
+            "label": "Issue tracker",
+            "href": "https://github.com/aka-author/WhatToWipe/issues"
+          },
+          {
+            "label": "Change history",
+            "href": "/history/changes"
+          }
+        ]
+      }
+    ],
+    "socials": {
+      "github": "https://github.com/aka-author/WhatToWipe"
+    },
+    "copyright": "© 2026 Erase & Rewrite"
+  },
+  "feedback": {
+    "github-issues": true,
+    "github-repo": "https://github.com/aka-author/WhatToWipe"
+  }
 }
