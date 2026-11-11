@@ -1,0 +1,172 @@
+---
+title: Settings
+description: Tune tile counts, spacing, colours, labels, and type sizes so the map reads the way you work
+---
+
+## Change how the map looks and behaves
+
+Every value that controls the map lives in one window. You can change how many tiles the map draws, how much breathing room each tile gets, which colours folders and files use, what the labels say, and how large the text grows inside a tile. Nothing here changes your files. The settings only change how the map draws them.
+
+## Open the settings
+
+<Steps>
+<Step title="Open the Tools menu">
+
+Click **Tools** in the menu bar at the top of the main window.
+
+</Step>
+<Step title="Choose Settings…">
+
+The settings window opens with one row per setting, each showing the value in use right now.
+
+</Step>
+<Step title="Change the values you care about">
+
+Type into a value cell, pick from a list, or open the colour picker. When you are done, finish with one of the three buttons described below.
+
+</Step>
+</Steps>
+
+There are three ways to finish:
+
+- **Apply**: checks your values, saves the valid ones, and applies them to the map immediately. The window stays open, so you can keep adjusting and watch the map change.
+- **OK**: does the same as Apply and then closes the window.
+- **Cancel**: closes the window without applying anything you have not already applied. Edits since your last Apply are dropped.
+
+## When a value is not valid
+
+Each setting accepts only certain values, and the tables below list them. If even one value in the window is not valid, the whole apply is refused.
+
+<Callout kind="alert">
+
+Nothing is applied at all, not even the values that were fine. Fix the value the program points at, then choose Apply or OK again.
+
+</Callout>
+
+Because the check is all or nothing, you never end up with half of your changes on the map and half of them silently lost.
+
+## Reset to the original values
+
+The **Reset Treemap Defaults** button puts every row back to the built-in default listed in the tables below. This is useful when you have been experimenting and want a known starting point. Resetting only changes what the window is showing: nothing is saved until you choose Apply or OK, and **Cancel** still throws the reset away along with your other edits.
+
+## Settings reference
+
+Each row appears in the window under the plain label in the first column. The key in backticks beside it is the name the same setting uses in the settings file, which is handy when you compare notes with support. The default is what the program uses on a fresh install.
+
+### Tiles and clumping
+
+| Setting | What it controls | Default | Allowed values |
+| --- | --- | --- | --- |
+| Maximum number of tiles (`treemap.maxTiles`) | The most tiles the map will draw. Once the limit is reached, folders stop being split into smaller tiles. | `20` | a whole number from 1 to 9999 |
+| Clump threshold ratio (`treemap.clumpThreshold`) | The share of the total a folder must take up before its contents are drawn as one clump, a single combined tile, instead of separate tiles. | `0.01` | a decimal from 0.000001 to 1, up to 6 decimal places |
+
+### Space inside tiles
+
+| Setting | What it controls | Default | Allowed values |
+| --- | --- | --- | --- |
+| Minimum tile width (`treemap.minTileWidth`) | The narrowest a tile is allowed to get. | `50pt` | a size from 1pt to 4096pt |
+| Minimum tile height (`treemap.minTileHeight`) | The shortest a tile is allowed to get. | `50pt` | a size from 1pt to 4096pt |
+| Tile left padding (`treemap.tilePaddingLeft`) | Gap between the left edge of a tile and what is drawn inside it. | `5pt` | a size from 0pt to 1024pt |
+| Tile top padding (`treemap.tilePaddingTop`) | Gap between the top edge of a tile and what is drawn inside it. | `5pt` | a size from 0pt to 1024pt |
+| Tile right padding (`treemap.tilePaddingRight`) | Gap between the right edge of a tile and what is drawn inside it. | `5pt` | a size from 0pt to 1024pt |
+| Tile bottom padding (`treemap.tilePaddingBottom`) | Gap between the bottom edge of a tile and what is drawn inside it. | `5pt` | a size from 0pt to 1024pt |
+
+### The font
+
+| Setting | What it controls | Default | Allowed values |
+| --- | --- | --- | --- |
+| Tile font family (`treemap.tileFontName`) | The font used for text inside tiles. | `Segoe UI` | a font installed on your PC, picked from the list |
+
+### Type sizes
+
+| Setting | What it controls | Default | Allowed values |
+| --- | --- | --- | --- |
+| Heading maximum font size (`treemap.headingMaxFontSize`) | The largest the tile name is allowed to grow. | `30pt` | a size from 1pt to 1024pt |
+| Heading minimum font size (`treemap.headingMinFontSize`) | The smallest the tile name is allowed to shrink to. | `8pt` | a size from 1pt to 1024pt |
+| Heading line height ratio (`treemap.headingLineHeight`) | Spacing between lines of the tile name, as a multiple of its type size. | `1` | a number from 0.01 to 10 |
+| Details font size ratio (`treemap.detailsFontSizeRatio`) | Size of the details line under the name, as a share of the name's size. | `0.8` | a number from 0.01 to 10 |
+| Details line height ratio (`treemap.detailsLineHeight`) | Spacing between lines of the details line, as a multiple of its type size. | `1.5` | a number from 0.01 to 10 |
+| Above-details height ratio (`treemap.aboveDetailsHeightRatio`) | Empty space between the name and the details line, as a multiple of the details type size. | `1` | a number from 0.01 to 10 |
+
+### Labels
+
+| Setting | What it controls | Default | Allowed values |
+| --- | --- | --- | --- |
+| Placeholder label text (`treemap.labelPlaceholder`) | The characters that stand in for a word cut short because it does not fit its tile. | `...` | any text, but not empty |
+| Dummy label text (`treemap.labelDummy`) | The label drawn in a tile when there is nothing to show. | `...` | any text, but not empty |
+
+### Colours
+
+Native colours apply to what sits plainly on your disk. Packed colours apply to what is packed inside an archive.
+
+| Setting | What it controls | Default | Allowed values |
+| --- | --- | --- | --- |
+| Native folder background color (`treemap.nativeFolderBgColor`) | Background of a folder tile drawn as it sits on your disk. | `#80ef80` | a colour |
+| Native folder text color (`treemap.nativeFolderTextColor`) | Text on a folder tile drawn as it sits on your disk. | `#000000` | a colour |
+| Packed folder background color (`treemap.packedFolderBgColor`) | Background of a folder tile packed inside an archive. | `#06402b` | a colour |
+| Packed folder text color (`treemap.packedFolderTextColor`) | Text on a folder tile packed inside an archive. | `#ffffff` | a colour |
+| Native file background color (`treemap.nativeFileBgColor`) | Background of a plain file tile. | `#ffb09c` | a colour |
+| Native file text color (`treemap.nativeFileTextColor`) | Text on a plain file tile. | `#000000` | a colour |
+| Packed file background color (`treemap.packedFileBgColor`) | Background of a file tile packed inside an archive. | `#900000` | a colour |
+| Packed file text color (`treemap.packedFileTextColor`) | Text on a file tile packed inside an archive. | `#ffffff` | a colour |
+| Native clump background color (`treemap.nativeClumpBgColor`) | Background of a clump tile made of items on your disk. | `#aaaaaa` | a colour |
+| Native clump text color (`treemap.nativeClumpTextColor`) | Text on a clump tile made of items on your disk. | `#000000` | a colour |
+| Packed clump background color (`treemap.packedClumpBgColor`) | Background of a clump tile made of items inside an archive. | `#323232` | a colour |
+| Packed clump text color (`treemap.packedClumpTextColor`) | Text on a clump tile made of items inside an archive. | `#ffffff` | a colour |
+
+### What counts as a program
+
+| Setting | What it controls | Default | Allowed values |
+| --- | --- | --- | --- |
+| Windows executable extensions (`treemap.win.exeFiles`) | The file name endings the program treats as programs. | `bat, com, exe, dll, scr, msi` | a comma separated list of file name endings, with no `#` character |
+
+### What gets saved to a file
+
+| Setting | What it controls | Default | Allowed values |
+| --- | --- | --- | --- |
+| Minimum supervised size, MB (`treemap.minSupervisedSize`) | The smallest size, in megabytes, that the program keeps track of. | `10` | a whole number of MB from 1 to 9999 |
+
+## How to write a value
+
+The tables use a compact notation because the value cells are narrow. You type the value the same way.
+
+A size is a number with `pt` for points or `mm` for millimetres written directly after it, with no space between them. Those are the only two units the window accepts, so a padding of twelve points is written `12pt` and a minimum tile width of four millimetres is `4mm`. If you leave the unit off, the number is read as points, so `50` means the same as `50pt`. Units such as `px`, `cm` and `in` are not accepted.
+
+The clump threshold ratio is a plain decimal between 0 and 1, not a percentage: type `0.01`, not `1%`. The settings file stores this one value as a percentage, so `1%` in the file and `0.01` in the window describe the same threshold. Everywhere else in the window the decimal is the only form that works.
+
+A colour is six hexadecimal digits, in other words six characters from 0 to 9 and A to F. A leading `#` is optional, so `#80ef80` and `80ef80` both give the same green.
+
+The four ratio settings take a decimal such as `1.5` or `0.8`, as do the line height and font size ratios. The remaining rows take either a whole number such as `20` or plain text such as `...`.
+
+### When the program refuses a value
+
+A refused value comes back with the row's name and the reason it was turned down, so you know which cell to fix and what it expects. The message uses the same plain labels you see in the window:
+
+- `Tile left padding must be between 0pt and 1024pt`
+- `Clump threshold ratio must be between 0.000001 and 1`
+- `Native folder background color must be in #RRGGBB format`
+- `Tile font family must not be empty`
+
+The colour message names the format as `#RRGGBB`, but the leading `#` stays optional in the cell itself. Correct the row the message names, then choose Apply or OK again. The map keeps drawing with the values from your last successful apply until the whole set passes.
+
+## Choosing a tile font
+
+The font row gives you a drop-down list of the fonts installed on your computer, so you rarely have to remember a name: open the list and pick one. The list is long, so typing the first few letters of a name is usually faster than scrolling. You can also type a font name into the cell directly, as long as you spell it the way it appears in the list.
+
+The new font takes effect on the map as soon as you choose Apply or OK, which makes it easy to compare two fonts by applying one, looking at the map, and applying the other.
+
+## Where your settings are stored
+
+The settings window writes to a plain text file called `Erase & Rewrite.config.txt`, kept in `%LocalAppData%\Erase & Rewrite`. The first time you start the program it creates that file and fills it with the defaults in the tables above, so a fresh install always has a complete set of values. After that it loads your values from the file on every start.
+
+You would only open the file by hand to read the values or copy them somewhere else, for instance into a support message. Change settings in the settings window instead, where each value is checked before it is saved.
+
+## Keep reading
+
+<Columns cols={1}>
+<Card title="Back to the manual overview" href="/user-manual/overview" icon="book-open" cta="Open the overview">
+
+See every chapter of the manual, from the first scan to reading the map.
+
+</Card>
+</Columns>

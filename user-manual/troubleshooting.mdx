@@ -1,0 +1,76 @@
+---
+title: Troubleshooting
+description: Find precise explanations for error messages, understand their underlying causes, and follow the most appropriate corrective actions.
+---
+
+## Find the message you saw
+
+When something goes wrong, the program shows a small window with a number and a sentence. Find that number below to see what happened and what to do next.
+
+## The two kinds of message
+
+The program shows two kinds of message:
+
+- **Error alert**: A number and a message. Match the number to the table below.
+- **Interruption alert**: A message with no number. Read [Messages without a code](#messages-without-a-code) for what to do.
+
+Both close with **OK**, <kbd>Enter</kbd>, or <kbd>Esc</kbd>.
+
+## Messages with a code
+
+Match the number in the message window to the first column.
+
+| Number | What you will see | What it means | What to do |
+| --- | --- | --- | --- |
+| 001 | "The folder could not be opened for scanning. Check that it still exists and that you have permission to read it." | The folder you picked cannot be read. | Check that the folder still exists and that your account can open it. If it is a protected location, open a folder you do have access to instead. |
+| 002 | "Scanning stopped because of an error. The treemap may be incomplete or empty." | Reading the folder failed for a technical reason, so the map cannot be trusted. | Read the folder again with **Inspect → Update**. If the problem keeps happening, open a smaller folder inside it to narrow down the cause. |
+| 003 | "The folder could not be opened in File Explorer." | The program asked Windows to show the folder, and Windows refused. | Open File Explorer yourself and navigate to the folder by hand. |
+| 004 | "The folder %folder path% is not found. Might you have deleted it in the meantime?" | The folder has gone since it was read. Another program or another person may have renamed, moved, or deleted it. | Open a folder again with **File → Open a Folder**. |
+| 005 | "The %object path% does not exist." | The file or folder you chose to remove is already gone. | Nothing more is needed. Read the folder again with **Inspect → Update** so the map matches the disk. |
+| 006 | "The %object path% cannot be moved to the bin." | Your account is not allowed to remove this item. | Remove it from File Explorer with the permissions you have, or ask whoever administers the computer. |
+| 007 | "Failed to move %object path% to the bin." | Windows could not move the item to the Bin, which happens when another program is using it. | Close the program that may be using the file and try again. |
+| 008 | "The treemap data could not be saved to %file path%." | The report could not be written to the place you chose. | Choose a location you can write to, such as your Documents folder. Windows may ask for administrator permission when you save into a protected folder. |
+
+<Callout kind="info">
+
+In messages, `%folder path%`, `%object path%`, and `%file path%` stand for the real folder or file path. The program fills in the actual path for you.
+
+</Callout>
+
+## Messages without a code
+
+An interruption alert carries a message and no number. It appears when reading a folder was stopped, either because you chose **Inspect → Stop** or pressed <kbd>Esc</kbd>, or because the reading could not continue.
+
+The map is left as it was. On the first read, this means an empty map. On an update, the previous map stays on screen unchanged, so nothing you were looking at is lost.
+
+When you are ready, read the folder again with **Inspect → Update**.
+
+## The map looks out of date
+
+The map is a snapshot from the last time the folder was read. It does not refresh by itself when files change elsewhere.
+
+Choose **Inspect → Update** to read the folder again, or **File → Open a Folder** to start somewhere else. Removing an item updates the sizes on the map straight away without a new read.
+
+## Something is missing from the map
+
+Some items are left out on purpose. Folders and files below the minimum tracked size (10 MB by default) are omitted, together with anything inside them. The smallest items are combined into one grey clump tile instead of being drawn one by one.
+
+These behaviors are adjustable in [Settings](/user-manual/settings) through `treemap.minSupervisedSize`, `treemap.maxTiles`, and `treemap.clumpThreshold`.
+
+## Where to go next
+
+<Columns cols={2}>
+
+<Card title="Settings" href="/user-manual/settings" icon="settings">
+
+Adjust the minimum tracked size, the number of tiles, and the clump threshold.
+
+</Card>
+
+<Card title="Manual overview" href="/user-manual/overview" icon="book-open">
+
+Return to the start of the manual for setup, menus, and everyday tasks.
+
+</Card>
+
+</Columns>

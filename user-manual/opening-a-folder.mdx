@@ -1,0 +1,77 @@
+---
+title: Opening a folder and scanning
+description: Open any folder or drive, watch the scan run, and stop it whenever you like.
+---
+
+## Open a folder
+
+This page takes you from an empty window to a finished treemap: open a folder, watch the scan as it runs, stop it if it takes longer than you want, and know what to do if something goes wrong along the way.
+
+<Steps>
+<Step title="Choose File → Open a Folder">
+
+Choose **File** → **Open a Folder**, click **Open** on the toolbar, or press <kbd>Ctrl</kbd>+<kbd>O</kbd>. The standard Windows **Open** dialog box appears, with **Open** and **Cancel** buttons.
+
+</Step>
+<Step title="Pick a folder">
+
+Select the folder you want to look at. A single folder such as Downloads works well, and so does a whole drive letter when you want to see where space goes fastest. Then click **Open**.
+
+</Step>
+<Step title="Watch the scan begin">
+
+The program works out which drive the folder sits on, updates the **Total** and **Free** readouts, and clears the treemap. Scanning starts immediately. The map stays empty until the scan finishes, so do not read an empty window as a failed scan.
+
+</Step>
+</Steps>
+
+## While it scans
+
+Scanning takes a moment on a small folder and a good while on a full drive. The window tells you what is happening the whole time.
+
+- **The toolbar changes.** The **Update** button is replaced by **Stop** for as long as the scan runs.
+- **The pointer turns busy.** The pointer shows the busy state until scanning ends.
+- **The status bar follows along.** The full path of the folder being scanned right now appears in the status bar. It refreshes about twice a second, which is often enough to keep up and slow enough that the text does not flicker.
+
+Scanning only reads. Nothing on the drive is changed, moved, or deleted, so you can open any folder without worrying about what the program will do to it.
+
+<Callout kind="info">
+
+The scan looks inside `.zip` and `.rar` archives as well, rather than treating them as single files. That is how the finished treemap can tell you whether a folder is mostly packed archives or mostly plain files.
+
+</Callout>
+
+## Stopping a scan
+
+Stop whenever you like. Large drives take time, and nothing holds you in the scan once it has started. Use any one of these:
+
+- Choose **Inspect** → **Stop**.
+- Click **Stop** on the toolbar.
+- Press <kbd>Esc</kbd>.
+
+When you stop, the treemap stays empty and the program tells you that the scan was interrupted. You are free to move around the window while a scan is running, so you can scroll, resize, and open menus without disturbing it.
+
+## When the scan finishes
+
+The status bar shows the path to the folder you opened, written the normal Windows way with backslashes, for example `C:\Users\Ann\Projects`. Long paths are shortened from the middle, but the backslashes stay, so a shortened path still reads like `C:\...\Projects\data`.
+
+The treemap is now complete and filled in. Everything you opened is laid out on screen and ready to explore.
+
+## If something goes wrong
+
+Three things can stop a scan or prevent it from starting, and each one comes with a message that tells you what to do next.
+
+| Message | Code | What to do |
+| --- | --- | --- |
+| The folder could not be opened for scanning. Check that it still exists and that you have permission to read it. | `001` | The folder is missing or you do not have permission to read it. Pick another folder. |
+| The folder `%folder path%` is not found. Might you have deleted it in the meantime? | `004` | The folder was deleted or renamed after you opened it. Pick the folder again. |
+| Scanning stopped because of an error. The treemap may be incomplete or empty. | `002` | Something interrupted the scan partway through. Try **Inspect** → **Update** to scan the folder again. |
+
+A scan you stop yourself is different. That notice arrives in its own dialog box with a plain **OK** button and no error code, because nothing went wrong: you simply asked the program to stop.
+
+For the full list of messages, see [Troubleshooting](/user-manual/troubleshooting).
+
+<Columns cols={2}>
+<Card title="Start from the manual overview" href="/user-manual/overview" icon="book-open" />
+<Card title="Learn to read the treemap" href="/user-manual/reading-the-treemap" icon="bar-chart" />
+</Columns>

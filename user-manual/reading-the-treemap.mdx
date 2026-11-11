@@ -1,0 +1,84 @@
+---
+title: Reading the treemap
+description: >-
+  Learn what the rectangles, colours, labels, and mouse pointers on the treemap
+  mean.
+---
+## What the picture shows
+
+The treemap is a picture of your drive made of rectangles. Each rectangle stands for one folder or file inside the folder you have open. Three things make the whole picture readable: bigger rectangles are bigger items, some very small items are merged together, and every tile is labelled and coloured so you can tell at a glance what it holds.
+
+Once you know how those three work, you can look at the map and see where your space went without opening anything.
+
+## Area means size
+
+A tile's area is its share of the folder you are looking at, compared with the other items in that folder. A tile covering a quarter of the picture holds a quarter of everything stored in that folder, and a tile covering a sliver holds almost nothing. Items that take up no measurable space are not drawn at all.
+
+All tiles sit at the same level. The map shows one tile per item directly inside the folder you are looking at, so folders are never drawn inside one another. To see what a folder contains, open it and the map is redrawn for that folder.
+
+<Callout kind="info" collapsed="false">
+  The treemap always fills the whole middle of the window, from the toolbar down to the status bar, with no empty margins. Resize the window and the tiles rearrange themselves to fit the new space.
+</Callout>
+
+## Why some tiles are grouped
+
+The map draws at most 20 tiles by default. When a folder holds more items than that, the 19 largest get a tile each and everything left over is collected into a single clump tile. An item that takes less than 1% of the folder's total size also goes into the clump, even if there would be room to draw it.
+
+The clump tile is a normal tile you can read: it shows how much space everything inside it takes together. Grouping small items keeps them from becoming unreadable slivers that tell you nothing.
+
+Both limits, the 20 tiles and the 1% cut-off, can be changed in [Settings](/user-manual/settings).
+
+## What a tile tells you
+
+Every tile carries the same three pieces of information, top to bottom:
+
+- The **name** of the folder or file.
+- Its **size**, as a number with one decimal place and a unit. A large program folder might read `4.2 GB` and a single photo `812.0 MB`.
+- Its **share of the drive**, as a percentage. Very small shares get an extra decimal place so they do not read as zero, and shares too small to show at all are left off the tile.
+
+When a name does not fit, it is cut in the middle and the missing part is replaced with three dots: `karab...s.pdf`. As much of the name as possible is kept, so short names usually stay whole. When a tile is too small for even a cut-down name, it shows only the three dots and no name.
+
+## Tooltips
+
+Point at a tile that shows no name, or at one whose name is interrupted by three dots, and a tooltip appears with the full name and the size of that folder or file. The tile is usually the quickest way to spot where the space is, and the tooltip tells you exactly what you found.
+
+## Colours
+
+Colour tells you what kind of item a tile holds and whether that item is an archive. A folder is always shown in the folder colour. The two dark shades belong to archives, so the colour tells you whether a tile is an archive rather than plain files on disk.
+
+| What the tile is    | Default colour | What it means                                                       |
+| ------------------- | -------------- | ------------------------------------------------------------------- |
+| Folder              | Green          | A folder on your disk                                               |
+| File, plain         | Light salmon   | An ordinary file                                                    |
+| File, plain archive | Dark red       | A file that is a `.zip` or `.rar` holding one file inside it        |
+| File, packed folder | Dark green     | A file that is a `.zip` or `.rar` holding a single folder inside it |
+| Clump, plain        | Grey           | A group of small items from your disk                               |
+| Clump, archives     | Dark grey      | A group of small items that come from inside archives               |
+
+Every colour can be changed in [Settings](/user-manual/settings).
+
+## The mouse pointer
+
+Move the pointer across the map and its shape tells you what a click will do before you click.
+
+| Pointer over the tile | What it means                                           | What a click does                                     |
+| --------------------- | ------------------------------------------------------- | ----------------------------------------------------- |
+| Hand                  | A folder with content inside                            | Opens the folder and redraws the map for its contents |
+| Not allowed sign      | An empty folder, or an executable file such as a `.exe` | Nothing happens                                       |
+| Ordinary arrow        | A normal file                                           | Nothing happens                                       |
+
+<Callout kind="info" collapsed="false">
+  The map is a snapshot taken when the folder was scanned. It does not watch the drive, so tiles will not change on their own while other programs add or remove files.
+</Callout>
+
+## Where to go next
+
+<Columns cols="2">
+  <Card title="Manual overview" href="/user-manual/overview" icon="book-open" horizontal="false">
+    Start from the beginning of the manual.
+  </Card>
+
+  <Card title="Moving around" href="/user-manual/moving-around" icon="arrow-right" horizontal="false">
+    Open folders, step back out, and keep your bearings on the map.
+  </Card>
+</Columns>

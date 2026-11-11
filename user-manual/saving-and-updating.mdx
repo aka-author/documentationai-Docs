@@ -1,0 +1,109 @@
+---
+title: Saving and updating
+description: Save a plain text report of the folder you are viewing, and refresh the map when the drive changes.
+---
+
+## Saving a copy of your folders, and bringing the map up to date
+
+You can write the folder on the map out to a file and keep it, send it, or open it later in Notepad. You can also re-read a folder when the drive has changed since the map was drawn, so the map and the capacity figures match what is actually on disk.
+
+## Save the treemap
+
+<Steps>
+<Step title="Choose Save the Treemap As..">
+
+Select **File → Save the Treemap As..** from the menu. You can also click **Save** on the toolbar, or press <kbd>Ctrl</kbd>+<kbd>S</kbd>.
+
+</Step>
+<Step title="Check the suggested folder and name">
+
+The standard Windows Save dialog opens with two things already filled in: the folder currently shown on the map, and a file name built from that folder's name plus today's date. A folder called `Projects` saved on 22 September 2026 is suggested as `Projects-2026-09-22.e&r`.
+
+Accept both, or browse to a different folder and type a name of your own. The name ends in `.e&r` unless you change it.
+
+</Step>
+<Step title="Click Save">
+
+The dialog closes and the file is on disk. The map behind the dialog has not changed.
+
+</Step>
+</Steps>
+
+## What the saved file holds
+
+The file is plain text. You can open it in Notepad, search it, or attach it to an email, and it will read the same on any machine.
+
+The first line is the date and time the file was saved. Every line below it describes one item in the folder: the name, indented by one space for each level of nesting, then a colon and the size of that item in bytes.
+
+```text
+2026-09-22T01:48:12
+C:\Users\Ann\Projects: 104857600
+ src: 102760448
+  main.cpp: 20971520
+ notes.txt: 31457280
+```
+
+The full path appears only once, on the root folder line. Every other line carries a name and a size, and where it sits in the tree follows from how far it is indented.
+
+<Callout kind="info">
+
+Only items at or above the size limit set in [Settings](/user-manual/settings) are written to the file. The default limit is 10 MB. When an item is left out, everything inside it is left out too, so one large folder can keep a great many small files out of the report.
+
+</Callout>
+
+<Callout kind="alert">
+
+The file records no type for an item. A folder whose contents were all below the size limit is written as a single line, and that line looks exactly like a file.
+
+</Callout>
+
+Saving reads nothing new from the drive. It writes down what the map already knows, so it is instant and it changes neither the map nor the capacity and free space figures on the toolbar.
+
+If Windows asks for administrator permission because you are writing to a protected location, answer that prompt. If you decline it, the save has failed.
+
+If the file cannot be written at all, the program tells you the treemap data could not be saved and names the path you chose.
+
+## Refresh a folder that has changed
+
+The map shows the folder as it was the last time it was read. Files added, deleted, or resized since then are not on it, and the map will not correct itself. Reading the folder again is a deliberate step.
+
+<Steps>
+<Step title="Choose Inspect → Update">
+
+Select **Inspect → Update** from the menu, or click **Update** on the toolbar. The program starts reading the folder again.
+
+</Step>
+<Step title="Wait for the reading to finish">
+
+While it reads, the **Update** button is replaced by **Stop**. You do not have to sit still and watch: you can keep moving between folders, and the rest of the program stays responsive. When the reading finishes, the map for that folder and the capacity and free space figures on the toolbar are up to date.
+
+</Step>
+</Steps>
+
+### Stop a refresh early
+
+Press **Stop** on the toolbar, or <kbd>Esc</kbd>, to abandon the reading partway through.
+
+The map and its data stay exactly as they were before you started, and the program tells you the scan was interrupted.
+
+If the folder has been deleted since the map was drawn, the refresh clears the map instead and tells you the folder is not found.
+
+## Where to go next
+
+<Columns cols={3}>
+<Card title="Troubleshooting" href="/user-manual/troubleshooting" icon="alert-triangle" cta="Look up a message">
+
+What to do when a save fails or a folder will not read.
+
+</Card>
+<Card title="Manual overview" href="/user-manual/overview" icon="book-open" cta="Start from the top">
+
+See every task this manual covers and where to begin.
+
+</Card>
+<Card title="Settings" href="/user-manual/settings" icon="settings" cta="Change the limit">
+
+Set the size limit that decides what gets saved to a file.
+
+</Card>
+</Columns>

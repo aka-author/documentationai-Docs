@@ -1,5 +1,5 @@
 {
-  "name": "Starter Kit",
+  "name": "Documentation",
   "colors": {
     "light": {
       "brand": "#F97316"
@@ -9,146 +9,172 @@
     }
   },
   "navigation": {
-    "tabs": [
+    "groups": [
       {
-        "tab": "Documentation",
-        "icon": "book",
-        "groups": [
-          {
-            "group": "Start Here",
-            "icon": "rocket",
-            "pages": [
-              {
-                "title": "Introduction",
-                "path": "introduction",
-                "icon": "home"
-              },
-              {
-                "title": "Quickstart",
-                "path": "quickstart",
-                "icon": "zap"
-              },
-              {
-                "title": "Components",
-                "path": "components",
-                "icon": "code"
-              }
-            ]
-          },
-          {
-            "group": "Components",
-            "icon": "layers",
-            "pages": [
-              {
-                "title": "Images",
-                "path": "components/images",
-                "icon": "image"
-              },
-              {
-                "title": "Cards",
-                "path": "components/cards",
-                "icon": "square"
-              },
-              {
-                "title": "Code",
-                "path": "components/code",
-                "icon": "code"
-              },
-              {
-                "title": "Callouts",
-                "path": "components/callouts",
-                "icon": "message-square"
-              },
-              {
-                "title": "Steps",
-                "path": "components/steps",
-                "icon": "list-ordered"
-              },
-              {
-                "title": "Tabs",
-                "path": "components/tabs",
-                "icon": "columns"
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "API Reference",
-        "icon": "code",
-        "groups": [
-          {
-            "group": "Overview",
-            "icon": "file-text",
-            "pages": [
-              {
-                "title": "Authentication",
-                "path": "authentication",
-                "icon": "lock"
-              }
-            ]
-          },
-          {
-            "group": "Sample Endpoints",
-            "openapi": "openapi.yaml"
-          }
-        ]
-      },
-      {
-        "tab": "Help Center",
-        "icon": "help-circle",
+        "group": "User manual",
         "pages": [
           {
-            "title": "Help Center",
-            "path": "help-center",
-            "icon": "home"
+            "title": "What Erase & Rewrite does",
+            "path": "user-manual/overview"
           },
           {
-            "group": "FAQs",
-            "icon": "help-circle",
-            "expandable": false,
-            "pages": [
-              {
-                "title": "Documentation Source",
-                "path": "help-center/faq/getting-started"
-              }
-            ]
+            "title": "Opening a folder and scanning",
+            "path": "user-manual/opening-a-folder"
           },
           {
-            "group": "Troubleshooting",
-            "icon": "alert-triangle",
-            "expandable": false,
-            "pages": [
-              {
-                "title": "Page Missing in Sidebar",
-                "path": "help-center/troubleshooting/install-error"
-              }
-            ]
+            "title": "Reading the treemap",
+            "path": "user-manual/reading-the-treemap"
           },
           {
-            "group": "Guides",
-            "icon": "book-open",
-            "expandable": false,
-            "pages": [
-              {
-                "title": "Create Your First Page",
-                "path": "help-center/guides/setup-project"
-              }
-            ]
+            "title": "Moving around folders",
+            "path": "user-manual/moving-around"
+          },
+          {
+            "title": "Removing items",
+            "path": "user-manual/removing-items"
+          },
+          {
+            "title": "Saving and updating",
+            "path": "user-manual/saving-and-updating"
+          },
+          {
+            "title": "Settings",
+            "path": "user-manual/settings"
+          },
+          {
+            "title": "Keyboard shortcuts",
+            "path": "user-manual/keyboard-shortcuts"
+          },
+          {
+            "title": "Troubleshooting",
+            "path": "user-manual/troubleshooting"
           }
         ]
       },
       {
-        "tab": "Changelog",
-        "icon": "clock",
+        "group": "Windows grid guides",
         "pages": [
           {
-            "title": "Changelog",
-            "path": "changelog",
-            "icon": "history"
+            "path": "guides/win/choosing-a-lib-for-a-grid",
+            "title": "Choosing a Lib for a Grid"
+          },
+          {
+            "path": "guides/win/win-go-editable-property-grids",
+            "title": "Implementing a Two-Column Config Grid in Go on Windows using walk"
+          }
+        ]
+      },
+      {
+        "group": "Specifications",
+        "pages": [
+          {
+            "path": "specs/arch-for-true-grid-win-go",
+            "title": "Shitwiper Settings Grid — Implementation-Ready Architecture (Rev 3)"
+          },
+          {
+            "path": "specs/arch-win-cpp-qt",
+            "title": "Erase & Rewrite: Architecture (Windows, C++, Qt)"
+          },
+          {
+            "path": "specs/arch-win-go",
+            "title": "Erase & Rewrite: Architecture (Windows, Go)"
+          },
+          {
+            "path": "specs/dispute",
+            "title": "Reviewer Reply to the Developer Response"
+          },
+          {
+            "path": "specs/fixplan",
+            "title": "Erase & Rewrite: Qt Implementation Fix Plan"
+          },
+          {
+            "path": "specs/funcspec",
+            "title": "The Erase & Rewrite Utility. Functional Specification"
+          },
+          {
+            "path": "specs/impl-win-cpp-qt",
+            "title": "Erase & Rewrite: Implementation Description (Windows, C++, Qt)"
+          },
+          {
+            "path": "specs/legalspec",
+            "title": "Erase & Rewrite: Legal and Licensing Specification"
+          },
+          {
+            "path": "specs/techspec-win-cpp-qt",
+            "title": "Erase & Rewrite: Technical Specification (Windows, C++, Qt)"
+          },
+          {
+            "path": "specs/techspec-win-go",
+            "title": "Erase & Rewrite: Technical Specification (Windows, Go)"
+          },
+          {
+            "path": "specs/true-grid-code-bundle",
+            "title": "True Grid Code Bundle (Current)"
+          },
+          {
+            "path": "specs/true-grid-related-sources",
+            "title": "True Grid Implementation — Related Sources (Current)"
+          }
+        ]
+      },
+      {
+        "group": "Verification",
+        "path": "verification/README",
+        "pages": [
+          {
+            "path": "verification/io-01-scan-boundary",
+            "title": "IO-01 scan cancellation boundary (Phase 1)"
+          },
+          {
+            "path": "verification/io-03-reparse-policy",
+            "title": "IO-03 reparse-point policy (Phase 1)"
+          },
+          {
+            "path": "verification/licensing-decision-record",
+            "title": "Licensing decision record — Erase & Rewrite (Windows Qt)"
+          },
+          {
+            "path": "verification/settings-grid-qt-strategy",
+            "title": "Settings grid Qt control strategy (SG-09)"
+          }
+        ]
+      },
+      {
+        "group": "Reference",
+        "pages": [
+          {
+            "path": "history/changes",
+            "title": "Change history"
+          },
+          {
+            "path": "build-workflow",
+            "title": "Windows exe build and installer workflow"
+          },
+          {
+            "path": "folder-structure",
+            "title": "Repository folder structure (rules)"
+          }
+        ]
+      },
+      {
+        "group": "Help",
+        "pages": [
+          {
+            "path": "CONTRIBUTORS",
+            "title": "Contributors — Erase & Rewrite"
           }
         ]
       }
     ]
-  }
+  },
+  "customCss": [
+    {
+      "src": "styles/migration.css"
+    }
+  ],
+  "icons": {
+    "library": "lucide"
+  },
+  "template": "classic",
+  "initialRoute": "CONTRIBUTORS"
 }

@@ -1,0 +1,90 @@
+---
+title: Moving around folders
+description: >-
+  Move down into folders, back up, and open the folder or a file in Windows File
+  Explorer.
+---
+## Getting from one folder to another
+
+The map shows a single folder at a time: the one you opened, or one you have moved down into. From there you can go deeper, come back up a level, or step out to Windows File Explorer when you need to do something the map cannot, such as renaming a file or copying a folder to another drive.
+
+Each of these moves starts from a fully drawn map with no dialog box open. If the map is still drawing, wait until every tile has appeared.
+
+## Going into a folder
+
+Click a tile that shows the hand pointer. The hand means the folder has something inside it.
+
+The folder you clicked becomes the one the map is showing, and the map is redrawn for its contents in the same way as before. Click your way down as many levels as you need.
+
+A tile showing the not-allowed pointer is either an empty folder or a file, and clicking it does nothing. You can still reach both through the right-click menu described below.
+
+## Coming back out
+
+Go up one level in any of three ways: choose **Inspect → Up**, click **Up** on the toolbar, or press <kbd>Backspace</kbd>. The folder above becomes the one the map is showing, drawn complete with its contents.
+
+Up is available only while the folder you are looking at sits inside the folder you opened. Once you are back at the top level, Up is greyed out; there is nothing higher to go.
+
+## Opening the folder in File Explorer
+
+Choose **Inspect → Explore**, click **Explore** on the toolbar, or press <kbd>Ctrl+E</kbd> to open the folder currently on the map in Windows File Explorer.
+
+This is the shortcut for everything the map does not do: renaming a folder, copying files somewhere else, or checking an item's size and dates. The pointer turns busy for a couple of seconds while the File Explorer window opens.
+
+## Opening one item in File Explorer
+
+Right-clicking a tile gives you the same reach for a single folder or a single file, without leaving the map or losing your place in it.
+
+### Opening a folder
+
+<Steps>
+  <Step title="Right-click the folder's tile" title-type="p">
+    The tile's menu appears.
+  </Step>
+
+  <Step title="Choose Explore..." title-type="p">
+    File Explorer opens at that folder. The pointer turns busy for a couple of seconds while it opens.
+  </Step>
+</Steps>
+
+### Opening a file
+
+<Steps>
+  <Step title="Right-click the file's tile" title-type="p">
+    The tile's menu appears.
+  </Step>
+
+  <Step title="Choose Open..." title-type="p">
+    The file opens in whichever program Windows uses for that file type, for example a PDF in your PDF reader or a photo in the Photos app.
+  </Step>
+</Steps>
+
+<Callout kind="info" collapsed="false">
+  For executable files such as `.exe` and `.bat`, **Open...** is greyed out on purpose. That way a stray click on the menu cannot start a program.
+</Callout>
+
+## Visiting the Bin
+
+Choose **Inspect → Expose the Bin**, click **Bin** on the toolbar, or press <kbd>Ctrl+B</kbd> to open the Windows Recycle Bin in File Explorer.
+
+From there you can put back something you removed by mistake, or empty the bin to reclaim the space it takes up. Because it is the real Windows Recycle Bin, the usual Windows rules apply to what you find in it.
+
+## If a folder has gone
+
+The map keeps showing what it last saw, so a folder can disappear underneath you. If someone else deletes or renames the folder you are pointing at, the program tells you the folder is not found and asks whether you deleted it, and the map is cleared.
+
+If Windows File Explorer itself refuses to open, the program tells you the folder could not be opened in File Explorer.
+
+Both messages, and what to do after them, are covered in [Troubleshooting](/user-manual/troubleshooting).
+
+## Where to go next
+
+<Columns cols="2">
+  <Card title="The manual at a glance" href="/user-manual/overview" icon="book-open" horizontal="false">
+    What the program does, and how the rest of the manual is organized.
+  </Card>
+
+  <Card title="Removing items" href="/user-manual/removing-items" icon="trash" horizontal="false">
+    Clear out what you no longer need and see what ends up in the Bin.
+  </Card>
+</Columns>
+

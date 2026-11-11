@@ -1,0 +1,92 @@
+---
+title: Removing items
+description: Send a file or folder to the Recycle Bin, watch the map update instantly, and know you can restore it from Windows at any time.
+---
+
+## Send a file or folder to the Recycle Bin
+
+Removing an item takes it off the map and puts it in the Windows Recycle Bin. The space it was using is freed up straight away, and the item itself is still there in the Bin if you change your mind.
+
+<Callout kind="info">
+
+Nothing is deleted permanently when you do this. The file or folder moves to the Bin, where Windows keeps it until you either restore it or empty the Bin yourself. If you removed something by mistake, open the Bin and put it back.
+
+</Callout>
+
+## Remove one item
+
+Start when the program is not scanning and no dialog box is open, so the tile's menu responds to your right-click.
+
+<Steps>
+
+<Step title="Right-click the tile of the folder or file">
+
+A menu appears for that tile, with the commands that apply to this kind of item.
+
+</Step>
+
+<Step title="Choose Move to Bin...">
+
+The confirmation dialog opens, with the full path of the item you picked.
+
+</Step>
+
+<Step title="Read the message">
+
+The dialog asks "Are you sure you want to move `C:\Users\Ann\Downloads\old-installers` to the Bin?" and explains that the item leaves its current location but stays available in the Bin. The program fills in the real full path of whatever you right-clicked, so the text matches your own item, not the example above.
+
+</Step>
+
+<Step title="Choose Move to Bin or Cancel">
+
+Choose **Move to Bin** to go ahead and put the item in the Bin. Choose **Cancel** to close the dialog and leave the item exactly where it is.
+
+</Step>
+
+</Steps>
+
+<Callout kind="tip">
+
+**Cancel** is the default button on this dialog. Pressing <kbd>Enter</kbd> on its own closes the dialog without removing anything, so a stray key press will not move the item. Choose **Move to Bin** only when you actually want it gone from the map.
+
+</Callout>
+
+## What happens after the move
+
+The item is moved to the Bin and the map is redrawn immediately. The program does not rescan the folder to work out what changed: it takes the size of the removed item off the sizes shown on the map. That is why the map updates the moment the move finishes instead of after a long wait on a large folder.
+
+The **Free** space figure on the toolbar is refreshed after a successful removal, so it includes the space you just freed. The **Total** capacity figure stays the same, because the size of the drive has not changed, only what is left on it.
+
+## If it does not work
+
+The item stays where it was in all three cases below, so nothing is lost. The program tells you which of the three happened.
+
+| What happened | Message you see | What it means |
+| --- | --- | --- |
+| The item is no longer there | The `C:\Users\Ann\Downloads\setup.exe` does not exist. | Something else removed or moved the item after the map was drawn, so there is nothing left to put in the Bin. |
+| Windows will not let the program remove it | The `C:\Users\Ann\Downloads\old-installers` cannot be moved to the Bin. | The program does not have permission to remove this item. This is usually a permissions problem on the folder or the drive. |
+| The move itself failed | Failed to move `C:\Users\Ann\Downloads\old-installers` to the Bin. | Windows started the move but did not complete it. The item is still in its original place. |
+
+If one of these messages keeps appearing, see [Troubleshooting](/user-manual/troubleshooting) for the next things to check.
+
+## When to scan again instead
+
+Removing an item only takes that one item's size off the map. It does not re-check the rest of the folder, so anything that changed outside the program, such as files added, moved, or deleted in File Explorer, will not show up until you scan again.
+
+If a lot has changed since the last scan, use Update rather than removing items one at a time. [Saving and updating](/user-manual/saving-and-updating) explains how Update re-reads the folders and refreshes the whole map.
+
+<Columns cols={2}>
+
+<Card title="Manual overview" href="/user-manual/overview" icon="book-open">
+
+See everything the manual covers and find the task you need.
+
+</Card>
+
+<Card title="Moving around" href="/user-manual/moving-around" icon="arrow-right">
+
+Open the Bin, restore something you removed by mistake, or empty it to reclaim space.
+
+</Card>
+
+</Columns>

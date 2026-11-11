@@ -1,0 +1,1876 @@
+---
+title: The Erase & Rewrite Utility. Functional Specification
+---
+
+<Callout kind="alert" title="Needs review">
+  **Needs review**: the page could not be read: specs/funcspec.md: Expected a closing tag for \`&lt;full>\` (991:28-991:65) before the end of \`emphasis\`
+
+  ````
+  # The Erase & Rewrite Utility. Functional Specification
+
+  ## Purpose
+
+  The Erase & Rewrite utility helps users see how disk space is used. It shows how large each part is next to the full volume, without guesswork. It supports clear choices about what to keep, move, or remove.
+
+
+  ## Concepts and Terms
+
+  *Archive:* A file that packages other files and folders as entries according to an archive container format.
+
+  *Bin:* The bin on the computer, provided by the operating system for file system objects that the user has deleted. A file system object in the Bin remains available until the user restores it or deletes it permanently from the Bin.
+
+  *Clump:* A set of file system objects perceived as a single unit.
+
+  *Clump tile:* A tile that represents the smallest file system objects within the context folder that are too small to be shown individually.
+
+  *Complete treemap:* A treemap representing a successfully scanned folder.
+
+  *Packing type:* How a file system object is stored relative to an archive container; the values used in this specification are in the NOTE below.
+
+  > **NOTE**
+  > In this specification, the packing types are native (on the volume, not inside an archive), packed file, packed folder, and packed clump.
+
+  *Context folder:* A folder that the user is currently viewing.
+
+  *Configuration file:* A file that stores configuration parameter values.
+
+  *Configuration folder:* A folder where the program stores configuration data, including the configuration file.
+
+  *Current volume:* The volume that contains the context folder.
+
+  *Empty folder:* A folder that contains no file system objects.
+
+  *Executable file:* A file whose contents encode instructions that a computer can load and run as a program, either directly by the system loader or through a configured runtime/interpreter.
+
+  *File system object:* A file or a folder, including the root folder of a volume.
+
+  *Folder hierarchy descriptor:* A data structure in computer memory that provides information about the folder of interest and all file system objects within it recursively.
+
+  *Leaf folder:* A folder that contains no nested folders and is not an empty folder.
+
+  *Native:* A file system object or a clump that exists on the volume outside an archive container.
+
+  *Navigation:* The user moves up and down the folder hierarchy in the program interface by changing the context folder to bring a folder of interest into focus.
+
+  *Node folder:* A folder that contains at least one nested folder.
+
+  *Program:* If not specified, the Erase & Rewrite utility.
+
+  *Scanning a folder:* An automatic activity during which the program collects data on the folder and all inner file system objects recursively.
+
+  *Size of a clump:* The combined size of the file system objects that the clump represents.
+
+  *Size of a file system object:* For a file, its total size. For a folder, the total of the sizes of all inner file system objects, calculated recursively.
+
+  *Subfolder:* A folder directly within the context folder.
+
+  *Success:* For scanning a folder, indicates that scanning was not interrupted by the user voluntarily or by the program for technical reasons.
+
+  > **NOTE**
+  > If the program fails to collect data on some inner folders or files because of insufficient permissions, but finishes scanning organically without interruptions, it is still a success.
+
+  *Superfolder:* A folder that directly contains the context folder.
+
+  *Target folder:* A folder that has been chosen by the user as a root.
+
+  *Tile:* One region of the treemap; it represents one file system object or one clump, per treemap rules under User Interface.
+
+  *Treemap:* A diagram that represents the content of the context folder, its structure, and the properties of its subfolders and clumps, including their sizes and volume shares.
+
+  *Treemap data:* A folder hierarchy descriptor together with auxiliary data items.
+
+  > **NOTE**
+  > Auxiliary items are reserved for future use; this specification does not define them.
+
+  *Tree role:* Whether a folder is a node folder, a leaf folder, or an empty folder.
+
+  *Unset treemap:* A treemap that is not complete.
+
+  *Volume:* A storage unit recognized by the operating system as a single accessible location, such as a physical drive, logical drive, partition, or mounted storage, excluding network locations.
+
+  *Volume capacity:* The total capacity of the current volume.
+
+  *Volume free space:* Free space on the current volume.
+
+  *Volume indicators:* The indicators that display properties of the current volume.
+
+  *Volume share of a clump:* The share of the clump size compared to the total capacity of the volume.
+
+  *Volume share of a file system object:* The share of the file system object size compared to the total capacity of the volume.
+
+  *Packed clump:* An archive that contains multiple file system objects.
+
+  *Packed file:* An archive that directly contains a single file, not enclosed in a folder.
+
+  *Packed folder:* An archive that contains a single folder.
+
+
+  ## Default Global Rules
+
+  ### Tile Size
+
+  Size comparisons always apply to the external rectangle of a tile as the user sees it.
+
+
+  ## Data Structures and Models
+
+  ### Folder Hierarchy Descriptor
+
+  A folder hierarchy descriptor provides the following data on the folder and each file system object within this folder recursively:
+
+  - Name
+  - Full path
+  - Folder size
+  - Volume share of the folder
+  - Number of nested folders
+  - Number of nested files
+  - Creation date and time of the oldest file
+  - Last update date and time of the newest file
+  - Type (file or folder)
+  - List of nested file system objects
+  - Packing type
+  - Tree role
+
+
+  ### Treemap Data File
+
+  A treemap data file keeps treemap data outside the program. The file is a plain text file.
+
+  A treemap data file consists of the following parts.
+
+  - The header, which is the first line
+  - The tree, which is every line below the header
+
+  The header states the date and time when the program saved the file.
+
+  Each line of the tree describes one file system object. The line states the following data in the following order.
+
+  - The indent
+  - The name of the object, except for the root folder, which the line states by full path
+  - A colon followed by a space
+  - The size of the object in bytes
+
+  A treemap data file provides no other data.
+
+  The indent is one space per level of nesting. The root folder line carries no indent. A line describes an object nested in the nearest line above it that carries one space less.
+
+  The tree repeats the hierarchy that the file system objects form on the volume. Therefore the file states a name once per object, and states a full path only for the root folder. The full path to any object follows from the root folder path and the names along the way down.
+
+  The file states a file system object only when the size of that object is not smaller than `treemap.minSupervisedSize`. The rule is the same for the root folder and for every nested object. An object that is smaller than the parameter is omitted, together with every object nested in it. Each written line keeps the size of that object. The program does not recompute sizes from the objects that remain.
+
+  The extract below shows the structure of a treemap data file. The extract assumes a `treemap.minSupervisedSize` that admits every object in it.
+
+  ```text
+  2026-09-22T01:48:12
+  C:\Users\Ann\Projects: 104857600
+   src: 102760448
+    main.cpp: 20971520
+   notes.txt: 31457280
+  ```
+
+  The file states no type for an object. Therefore a folder that contains no written nested object looks exactly like a file.
+
+
+  ## Use Cases
+
+  ### Available Use Cases
+
+  The program must support the following use cases:
+
+  - *Starting a New Session*
+  - *Choosing a Target Folder*
+  - *Saving the Treemap Data*
+  - *Updating the Context Folder*
+  - *Scanning the Context Folder*
+  - *Diving Into a Subfolder*
+  - *Returning to the Superfolder*
+  - *Exploring the Context Folder*
+  - *Exploring a Subfolder*
+  - *Exploring a File*
+  - *Exposing the Bin*
+  - *Moving a File System Object to the Bin*
+  - *Checking a Folder of Interest*
+  - *Displaying the Program Information*
+  - *Quitting the Current Session*
+
+
+  ### Starting a New Session
+
+  **Context**
+
+  The user decides to clean up volumes on their devices.
+
+  **Steps**
+
+  1. The user launches the program.
+
+     **System Response**
+
+     The program starts. The main window opens.
+
+  **Result**
+
+  - The program is ready to work.
+  - The settings are loaded.
+  - The treemap is unset.
+  - The volume indicators are unset.
+
+  **Postrequisites**
+
+  - *Choosing a Target Folder*
+  - *Displaying the Program Information*
+  - *Quitting the Current Session*
+
+
+  ### Choosing a Target Folder
+
+  **Context**
+
+  The user has to choose a folder that they will treat as the target folder.
+
+  **Prerequisites**
+
+  All of the following conditions are met:
+
+  - The program is not scanning.
+  - Neither modal dialog box is open.
+
+  **Steps**
+
+  1. The user selects the **File → Open a Folder** command.
+
+     **System Response**
+
+     Display the **Open** dialog box.
+
+  2. The user selects some folder.
+
+     **System Response**
+
+     Identify the current volume.
+
+     Update the volume indicators.
+
+     Display the treemap as unset.
+
+     If the folder is available for scanning:
+
+     - Set the folder as both the target and the context folder.
+     - Apply the *Scanning the Context Folder* use case.
+
+     If the folder is not available for scanning:
+
+     - Raise the `#001` error.
+     - Display an error alert.
+     - Terminate the use case.
+
+  3. The user waits until scanning has finished.
+
+     **System Response**
+
+     If the target folder does not exist:
+
+     - Raise the `#004` error.
+     - Display an error alert.
+     - Keep the treemap unset.
+     - Recognize the result as negative.
+     - Terminate the use case.
+
+     If scanning has finished successfully:
+
+     - Display the treemap as complete.
+     - Recognize the result as positive.
+
+     If scanning has been interrupted:
+
+     - Keep the treemap unset.
+     - Display an interruption alert.
+     - Recognize the result as negative.
+
+  **Rules**
+
+  The folder is not available for scanning if the program does not have sufficient permissions to access it.
+
+  Otherwise, the folder is available for scanning.
+
+  **Result**
+
+     **Positive**
+
+     - The treemap data is collected.
+     - The treemap is displayed as complete.
+
+     **Negative**
+
+     The treemap is displayed as unset.
+
+  **Postrequisites**
+
+     **Positive**
+
+     - *Saving the Treemap Data*
+     - *Choosing a Target Folder*
+     - *Updating the Context Folder*
+     - *Diving Into a Subfolder*
+     - *Exploring the Context Folder*
+     - *Exploring a Subfolder*
+     - *Exploring a File*
+     - *Exposing the Bin*
+     - *Moving a File System Object to the Bin*
+     - *Displaying the Program Information*
+     - *Quitting the Current Session*
+
+     **Negative**
+
+     - *Choosing a Target Folder*
+     - *Displaying the Program Information*
+     - *Quitting the Current Session*
+
+  ### Saving the Treemap Data
+
+  **Context**
+
+  The user is going to save the treemap data for the context folder to the drive.
+
+  **Prerequisites**
+
+  All of the following conditions are met:
+
+  - The treemap data is collected.
+  - The program is not scanning.
+  - Neither modal dialog box is open.
+
+  **Steps**
+
+  1. The user selects the **File → Save the Treemap As..** command.
+
+     **System Response**
+
+     Display the **Save** dialog box with the suggested folder and the suggested file name.
+
+  2.a. The user accepts or changes the suggested file name and clicks on the **Save** button.
+
+     **System Response**
+
+     Close the **Save** dialog box.
+
+     Save the treemap data to the named file as a treemap data file.
+
+     If the operating system requires administrator permission to write the named file, then let the operating system request that permission. Do not suppress those requests. Do not treat the first access denial as the final result.
+
+     If the treemap data cannot be saved, then perform the following actions:
+
+     - Raise the `#008` error.
+     - Display an error alert.
+     - Recognize the result as negative.
+     - Terminate the use case.
+
+     Recognize the result as positive.
+
+  2.b. The user clicks on the **Cancel** button.
+
+     **System Response**
+
+     Close the **Save** dialog box.
+
+     Recognize the result as negative.
+
+  **Rules**
+
+  The file must be a treemap data file.
+
+  The root folder of the saved tree must be the context folder. The file must cover the context folder and every file system object nested in it recursively, except those file system objects that are smaller than `treemap.minSupervisedSize`.
+
+  The default file name extension must be `.e&r`.
+
+  The suggested folder must be the context folder.
+
+  The suggested file name must be `<context folder name>-yyyy-mm-dd.e&r`, where `<context folder name>` is the name of the context folder, and `yyyy-mm-dd` is the current date.
+
+  Saving does not scan. The program saves the treemap data it already holds.
+
+  Saving changes neither the treemap, nor the treemap data, nor the volume indicators.
+
+  The program must not suppress the operating system permission requests that a write to a protected location raises. Those requests belong to the operating system. If the user refuses them, the save has failed.
+
+  **Result**
+
+     **Positive**
+
+     The treemap data is saved to the named file as a treemap data file.
+
+     **Negative**
+
+     The treemap data is not saved.
+
+  **Postrequisites**
+
+  - *Saving the Treemap Data*
+  - *Choosing a Target Folder*
+  - *Updating the Context Folder*
+  - *Diving Into a Subfolder*
+  - *Returning to the Superfolder*
+  - *Exploring the Context Folder*
+  - *Exploring a Subfolder*
+  - *Exploring a File*
+  - *Exposing the Bin*
+  - *Moving a File System Object to the Bin*
+  - *Displaying the Program Information*
+  - *Quitting the Current Session*
+
+
+  ### Updating the Context Folder
+
+  **Context**
+
+  The treemap is based on data collected during the last scan. This data includes folder sizes, structure, and volume shares. Changes in the file system make this data outdated. Files and folders may be deleted, moved, or added. The treemap does not update automatically. It may no longer reflect the actual state of the context folder. This use case updates the data and rebuilds the treemap.
+
+  **Prerequisites**
+
+  All of the following conditions are met:
+
+  - A context folder is set.
+  - The program is not scanning.
+  - Neither modal dialog box is open.
+
+  **Steps**
+
+  1. The user selects the **Inspect → Update** command.
+
+     **System Response**
+
+     Apply *Scanning the Context Folder* use case.
+
+  2. The user waits until scanning has finished.
+
+     **System Response**
+
+     If the context folder does not exist anymore:
+
+     - Display the treemap as unset.
+     - Raise the `#004` error.
+     - Display an error alert.
+     - Recognize the result as negative.
+     - Terminate the use case.
+
+     If the scanning has finished successfully:
+
+     - Update the treemap data.
+     - Update the volume indicators.
+     - Display the treemap for the context folder as complete.
+     - Recognize the result as positive.
+
+     If the scanning has been interrupted:
+
+     - Keep the treemap and treemap data unchanged.
+     - Display a interruption alert.
+     - Recognize the result as incomplete.
+
+  **Result**
+
+     **Positive**
+
+     The treemap is displayed as complete.
+
+     **Incomplete**
+
+     The treemap is displayed as unchanged.
+
+     **Negative**
+
+     The treemap is displayed as unset.
+
+  **Rules**
+
+  The user is allowed to navigate while the use case *Scanning the Context Folder* is in progress.
+
+  **Postrequisites**
+
+     **Positive, Incomplete**
+
+     - *Saving the Treemap Data*
+     - *Choosing a Target Folder*
+     - *Updating the Context Folder*
+     - *Diving Into a Subfolder*
+     - *Returning to the Superfolder*
+     - *Exploring the Context Folder*
+     - *Exploring a Subfolder*
+     - *Exploring a File*
+     - *Exposing the Bin*
+     - *Moving a File System Object to the Bin*
+     - *Displaying the Program Information*
+     - *Quitting the Current Session*
+
+     **Negative**
+
+     - *Choosing a Target Folder*
+     - *Displaying the Program Information*
+     - *Quitting the Current Session*
+
+
+  ### Scanning the Context Folder
+
+  **Context**
+
+  Any of the following conditions is met:
+
+  - Overall use case is *Choosing a Target Folder*.
+  - Overall use case is *Updating the Context Folder*.
+
+  **Steps**
+
+  1. Reconfigure the user interface.
+
+     - Hide the **Inspect → Update** command.
+     - Show the **Inspect → Stop** command.
+     - Set the mouse pointer to the busy state.
+
+  2. Scan the context folder hierarchy.
+
+     Handle the possible issues as stated below.
+
+     If the user selects the **Inspect → Stop** command:
+
+     - Stop scanning.
+     - Recognize the result as negative.
+     - Terminate the use case.
+
+     If the scanning becomes impossible for technical reasons:
+
+     - Stop scanning.
+     - Raise the `#002` error.
+     - Display an error alert.
+     - Recognize the result as negative.
+     - Terminate the use case.
+
+     Otherwise, if scanning has finished successfully:
+
+     - Recognize the result as positive.
+
+  3. Reconfigure the user interface.
+
+     - Hide the **Inspect → Stop** command.
+     - Show the **Inspect → Update** command.
+     - Set the mouse pointer to the default state.
+
+  **Rules**
+
+  All inner file system objects must be scanned recursively from the context folder downward through the hierarchy.
+
+  The folder hierarchy descriptor must be assembled or updated for the context folder. The folder hierarchy descriptor for the target folder must be updated.
+
+  The program must examine the files of the following types:
+
+  - rar
+  - zip
+
+  If the file is an archive and the catalog of the archive is available, then the packing type of the file must be detected. Otherwise the file must be classified as a packed clump.
+
+  During scanning, the path to the folder that is currently being scanned must be displayed in the status bar as a full path. To prevent excessive blinking, the program must update the status bar each `scanning.updateInterval` seconds.
+
+
+  **Result**
+
+     **Positive**
+
+     - Data on the target folder and the descendants is collected.
+     - Scanning finished organically.
+
+     **Negative**
+
+     - Scanning has been interrupted.
+
+  **Postrequisites**
+
+  Control returns to the overall use case.
+
+
+  ### Diving Into a Subfolder
+
+  **Prerequisites**
+
+  All of the following conditions are met:
+
+  - A treemap is displayed as complete.
+  - Neither modal dialog box is open.
+
+  **Steps**
+
+  1. The user clicks on a tile.
+
+     **System Response**
+
+     Apply the *Checking a Folder of Interest* use case to the subfolder.
+
+     If the subfolder is not empty:
+
+     - Make the subfolder the context folder.
+     - Display the treemap for the new context folder as complete.
+     - Recognize the result as positive.
+
+     Otherwise, recognize the result as negative.
+
+  **Result**
+
+     **Positive**
+
+     - The subfolder is the context folder now.
+     - The treemap is updated accordingly.
+
+     **Negative**
+
+     The click has no effect.
+
+  **Postrequisites**
+
+  - *Saving the Treemap Data*
+  - *Choosing a Target Folder*
+  - *Updating the Context Folder*
+  - *Diving Into a Subfolder*
+  - *Returning to the Superfolder*
+  - *Exploring the Context Folder*
+  - *Exploring a Subfolder*
+  - *Exploring a File*
+  - *Exposing the Bin*
+  - *Moving a File System Object to the Bin*
+  - *Displaying the Program Information*
+  - *Quitting the Current Session*
+
+
+  ### Returning to the Superfolder
+
+  **Context**
+
+  The user navigates the folder hierarchy upward.
+
+  **Prerequisites**
+
+  All of the following conditions are met:
+
+  - A treemap is displayed as complete.
+  - The context folder is not the target folder.
+  - Neither modal dialog box is open.
+
+  **Steps**
+
+  1. The user selects the **Inspect → Up** command.
+
+     **System Response**
+
+     Apply the *Checking a Folder of Interest* use case to the superfolder.
+
+     Make the superfolder the context folder.
+
+     Display the treemap for the new context folder as complete.
+
+  **Result**
+
+     **Positive**
+
+     - The superfolder is the context folder now.
+     - The treemap is updated accordingly.
+
+     **Negative**
+
+     The treemap is displayed unset.
+
+  **Postrequisites**
+
+     **Positive**
+
+     - *Saving the Treemap Data*
+     - *Choosing a Target Folder*
+     - *Updating the Context Folder*
+     - *Diving Into a Subfolder*
+     - *Returning to the Superfolder*
+     - *Exploring the Context Folder*
+     - *Exploring a Subfolder*
+     - *Exploring a File*
+     - *Exposing the Bin*
+     - *Moving a File System Object to the Bin*
+     - *Displaying the Program Information*
+     - *Quitting the Current Session*
+
+     **Negative**
+
+     - *Choosing a Target Folder*
+     - *Displaying the Program Information*
+     - *Quitting the Current Session*
+
+
+  ### Exploring the Context Folder
+
+  **Context**
+
+  The user wants to open the context folder in the system file manager.
+
+  **Prerequisites**
+
+  All of the following conditions are met:
+
+  - A treemap is displayed as complete.
+  - Neither modal dialog box is open.
+
+  **Steps**
+
+  1. The user selects the  **Inspect → Explore** command.
+
+     **System Response**
+
+     - Apply the *Checking a Folder of Interest* use case to the context folder.
+     - Open the system file manager window for the context folder.
+     - Keep the mouse pointer in the busy state for two seconds.
+     - Recognize the result as positive.
+
+  **Result**
+
+     **Positive**
+
+     The context folder is opened in the system file manager.
+
+     **Negative**
+
+     The treemap is displayed as unset.
+
+  **Postrequisites**
+
+     **Positive**
+
+     - *Saving the Treemap Data*
+     - *Choosing a Target Folder*
+     - *Updating the Context Folder*
+     - *Diving Into a Subfolder*
+     - *Returning to the Superfolder*
+     - *Exploring the Context Folder*
+     - *Exploring a Subfolder*
+     - *Exploring a File*
+     - *Exposing the Bin*
+     - *Moving a File System Object to the Bin*
+     - *Displaying the Program Information*
+     - *Quitting the Current Session*
+
+     **Negative**
+
+     - *Choosing a Target Folder*
+     - *Displaying the Program Information*
+     - *Quitting the Current Session*
+
+
+  ### Exploring a Subfolder
+
+  **Context**
+
+  The user wants to open a subfolder in the system file manager.
+
+  **Prerequisites**
+
+  - A treemap is displayed as complete.
+  - Neither modal dialog box is open.
+
+  **Steps**
+
+  1. The user right-clicks a tile.
+
+     **System Response**
+
+    Display a context menu for the tile.
+
+    The context menu must contain the following items:
+
+     - **Explore...**
+
+  2. The user selects the **Explore** command.
+
+     **System Response**
+
+     - Apply the *Checking a Folder of Interest* use case to the subfolder.
+     - Open the system file manager window for the subfolder.
+     - Keep the mouse pointer in the busy state for two seconds.
+     - Recognize the result as positive.
+
+  **Result**
+
+     **Positive**
+
+     The subfolder is opened in the system file manager.
+
+     **Negative**
+
+     None.
+
+  **Postrequisites**
+
+  - *Saving the Treemap Data*
+  - *Choosing a Target Folder*
+  - *Updating the Context Folder*
+  - *Diving Into a Subfolder*
+  - *Returning to the Superfolder*
+  - *Exploring the Context Folder*
+  - *Exploring a Subfolder*
+  - *Exploring a File*
+  - *Exposing the Bin*
+  - *Moving a File System Object to the Bin*
+  - *Displaying the Program Information*
+  - *Quitting the Current Session*
+
+
+  ### Checking a Folder of Interest
+
+  **Context**
+
+  Any use case in which the user tries to perform some operation against the folder of interest.
+
+  **Parameters**
+
+  The full path to the folder of interest.
+
+  **Steps**
+
+  1. If the folder exists, recognize the result as positive, otherwise as negative.
+
+  **Result**
+
+     **Positive**
+
+     The overall use case proceeds plainly.
+
+     **Negative**
+
+     - Raise the `#004` error.
+     - Display an error alert.
+     - Recognize the result of the overall use case as negative.
+     - Terminate the overall use case.
+
+  **Postrequisites**
+
+  Control returns to the overall use case.
+
+
+  ### Exploring a File
+
+  **Context**
+
+  The user wants to view a file using a corresponding application.
+
+  **Prerequisites**
+
+  All of the following conditions are met:
+
+  - A treemap is displayed as complete.
+  - Neither modal dialog box is open.
+
+  **Steps**
+
+  1. The user right-clicks a tile.
+
+     **System Response**
+
+     Display a context menu for the tile.
+
+     The context menu must contain the following items:
+
+     - **Open...**
+
+  2. If the file is executable:
+
+     - Display the **Open...** command disabled.
+     - Recognize the result as negative.
+
+     **Step Result**
+
+     The use case cannot proceed.
+     The file is not opened.
+
+  3. The user selects the **Open...** command.
+
+     **System Response**
+
+     - Open the file in the associated application.
+     - Keep the mouse pointer in the busy state for two seconds.
+     - Recognize the result as positive.
+
+     The file should be opened in the default application associated with its file type, as provided by the operating system.
+
+  **Rules**
+
+  Whether a file is executable for this use case must be determined using a host-OS-specific configuration parameter that stores the list of executable file types.
+
+  | OS      | Parameter Name           |
+  |---------|--------------------------|
+  | Windows | `treemap.win.exeFiles`   |
+  | Linux   | `treemap.linux.exeFiles` |
+  | macOS   | `treemap.macos.exeFiles` |
+
+  **Result**
+
+     **Positive**
+
+     The file is loaded in the associated application.
+
+     **Negative**
+
+     None.
+
+  **Postrequisites**
+
+  - *Saving the Treemap Data*
+  - *Choosing a Target Folder*
+  - *Updating the Context Folder*
+  - *Diving Into a Subfolder*
+  - *Returning to the Superfolder*
+  - *Exploring the Context Folder*
+  - *Exploring a Subfolder*
+  - *Exploring a File*
+  - *Exposing the Bin*
+  - *Moving a File System Object to the Bin*
+  - *Displaying the Program Information*
+  - *Quitting the Current Session*
+
+
+  ### Exposing the Bin 
+
+  **COntext**
+
+  The user wants to examine the bin. 
+
+  **Prerequisites**
+
+  All of the following conditions are met:
+
+  - The program is not scanning.
+  - Neither modal dialog box is open.
+
+  **Steps**
+
+  1. The user selects the **Inspect → Expose the Bin** command. 
+
+     **System Response**
+
+     Open the system file manager window for the bin.
+
+     Keep the mouse pointer in the busy state for two seconds.
+
+  **Result**
+
+     The bin is available for the user in  file manager window
+
+
+  ### Moving a File System Object to the Bin
+
+  **Context**
+
+  The user decides to get rid of a file or a folder.
+
+  **Prerequisites**
+
+  All of the following conditions are met:
+
+  - The program is not scanning.
+  - Neither modal dialog box is open.
+
+  **Steps**
+
+  1. The user right-clicks a tile that represents one of the following:
+
+     - Folder
+     - File
+
+     **System Response**
+
+     Display a context menu for the tile.
+
+     The context menu must contain the following items:
+
+     - The items that correspond to a title based of the file system object type.
+     - **Move to Bin...**
+
+  2. The user selects the **Move to Bin...** command.
+
+     **System Response**
+
+     Open the Move to bin request dialog box.
+
+  3.a. The user clicks on the **Move to Bin** button. 
+
+     **System Response**
+
+     Check if the file system object still exists. If the file system object does not exist, then perform the following actions:
+     
+     - Display an alert *The <full path to the file system object> does not exist.*.
+     - Terminate the use case. 
+
+     Check if it it is available for removal. If the file system object is not available for removal, then perform the following actions: 
+     
+     - Display an alert *The <full path to the file system object> cannot be moved to the bin.*.
+     - Terminate the use case.
+
+     Move the file object to the Bin.
+
+     If the file system object cannot be moved to the Bin, then perform the following actions: 
+     
+     - Display an alert *Failed to move <full path to the file system object> to the bin.*.
+     - Terminate the use case. 
+
+     Rebuild the treemap data. Do not scan. Subtract the size of the removed file system object from the treemap data.
+
+     Update the treemap.
+
+  3.b. The user clicks on the **Cancel** button.
+
+     **System Response**
+
+     Close the Move to bin request dialog box.
+
+     Recognize the result as negative.
+
+  **Rules**
+
+  The file system object is not available for removal if the program does not have sufficient permissions to remove it.
+
+  Otherwise, the file system object is available for removal.
+
+  **Result**
+
+     **Positive**
+
+     - The file system object is moved to the Bin.
+     - The tree map is updated. 
+
+     **Negative**
+
+     None.
+
+  **Postrequisites**
+
+  - *Saving the Treemap Data*
+  - *Choosing a Target Folder*
+  - *Updating the Context Folder*
+  - *Diving Into a Subfolder*
+  - *Returning to the Superfolder*
+  - *Exploring the Context Folder*
+  - *Exploring a Subfolder*
+  - *Exploring a File*
+  - *Exposing the Bin*
+  - *Moving a File System Object to the Bin*
+  - *Displaying the Program Information*
+  - *Quitting the Current Session*
+
+
+  ### Displaying the Program Information
+
+  **Context**
+
+  The user wants to see information about the program.
+
+  **Prerequisites**
+
+  Neither modal dialog box is open.
+
+  **Steps**
+
+  1. The user selects the **Help → About** command.
+
+     **System Response**
+
+     Display the **About** dialog box.
+
+  2. The user closes the **About** dialog box.
+
+     **System Response**
+
+     Close the **About** dialog box.
+
+  **Rules**
+
+  While the **About** dialog box is open, the following text must be visible:
+
+  - The product name **Erase & Rewrite**.
+  - The application version as a single dotted string **Major.Minor.Patch.Build**, where Major, Minor, Patch, and Build are decimal integers and the string is identical to the **File version** value shown in Windows File Explorer for the running executable (Properties → Details).
+
+  **Result**
+
+  The **About** dialog has opened and shown the text required in **Rules**, then closed.
+
+  **Postrequisites**
+
+  The following use cases are available to the user:
+
+  - *Saving the Treemap Data*
+  - *Choosing a Target Folder*
+  - *Updating the Context Folder*
+  - *Diving Into a Subfolder*
+  - *Returning to the Superfolder*
+  - *Exploring the Context Folder*
+  - *Exploring a Subfolder*
+  - *Exploring a File*
+  - *Exposing the Bin*
+  - *Moving a File System Object to the Bin*
+  - *Displaying the Program Information*
+  - *Quitting the Current Session*
+
+
+  ### Quitting the Current Session
+
+  **Context**
+
+  The user finishes working with the program.
+
+  **Prerequisites**
+
+  Neither modal dialog box is open.
+
+  **Steps**
+
+  1. The user selects the **File → Exit** command.
+
+     **System Response**
+
+     Quit the program.
+
+  **Result**
+
+  The session is over.
+
+  **Postrequisites**
+
+  None.
+
+
+  ## User Interface
+
+  ### Commands
+
+  The following commands must be available for the user in the main window.
+
+  | Command                         | Toolbar            | Hot Keys      | Action                               |
+  |---------------------------------|--------------------|---------------|--------------------------------------|
+  | **File → Open a Folder**        | **Open**           | **Ctrl+O**    | *Choosing a Target Folder*           |
+  | **File → Save the Treemap As..** | **Save**          | **Ctrl+S**    | *Saving the Treemap Data*            |
+  | **File → Exit**                 |                    | **Ctrl+X**    | *Quitting the Current Session*       |
+  | **Inspect → Up**                | **Up**             | **Backspace** | *Returning to the Superfolder*       |
+  | **Inspect → Explore...**        | **Explore**        | **Ctrl+E**    | *Exploring the Context Folder*       |
+  | **Inspect → Expose the Bin...** | **Expose the Bin** | **Ctrl+B**    | *Exposing the Bin*                   |
+  | **Inspect → Update**            | **Update**         |               | *Updating the Context Folder*        |
+  | **Inspect → Stop**              | **Stop**           | **Esc**       | Terminating scanning                 |
+  | **Help → About...**             |                    |               | *Displaying the Program Information* |
+
+  Selecting menu commands, clicking on toolbar buttons, and pressing hot keys must be treated as equivalent actions according to the table above.
+
+  > **NOTE**
+  > In this document, use case descriptions must refer only to menu commands for the sake of brevity.
+
+  These rules must be fulfilled at any moment. Elements corresponding to unavailable actions are disabled. Elements corresponding to available actions are enabled.
+
+  The following groups of commands must be treated as mutually exclusive:
+
+  - Group *UpdateStop*: **Inspect → Update**, **Inspect → Stop**
+
+  The following rules must be implemented for the mutually exclusive elements:
+
+  * Mutually exclusive elements never visible at the same time.
+  * Mutually exclusive elements hold the same place.
+
+  The mutually exclusive groups must affect the following access methods:
+
+  - Menu commands
+  - Toolbar elements
+  - Hot keys
+
+  The phrase *command gets disabled* refers to the following effects arising at the same time.
+
+  The corresponding menu item is displayed as disabled.
+  The corresponding button in the toolbar is displayed as disabled.
+  The corresponding hotkeys do not produce the corresponding response.
+
+  The phrase *command gets enabled* means that the effects listed above cease at the same time.
+
+  The phrase *command disappears* refers to the following effects arising at the same time.
+
+  - The corresponding item disappears from the menu.
+  - The corresponding button disappears from the toolbar.
+  - The corresponding hotkeys do not produce the corresponding response.
+
+  The phrase *command appears* means that the effects listed above cease at the same time.
+
+
+  ### Main Window
+
+  #### Main Window Elements
+
+  The main window must contain the following elements:
+
+  - Main menu
+  - Toolbar
+  - Treemap
+  - Status bar
+
+  The main window must have a unique icon.
+
+
+  #### Main Menu
+
+  The menu must have the following structure.
+
+  - **File**
+     - **Open a Folder**
+     - **Save the Treemap As..**
+     - --- (separator)
+     - **Exit**
+  - **Inspect**
+     - **Up**
+     - **Explore**
+     - **Expose the Bin**
+     - --- (separator)
+     - **Update**
+     - **Stop**
+  - **Tools**
+     - **Settings...** 
+  - **Help**
+    - **About**
+
+
+  #### Toolbar
+
+  The toolbar must contain the following elements.
+
+  | Element     | Type      | Icon/Data           | Tooltip                        | Label         |
+  |-------------|-----------|---------------------|--------------------------------|---------------|
+  | **Open**    | Button    | Folder icon         | `Open a folder`                |               |
+  | **Save**    | Button    | Diskette icon       | `Save the treemap data`        |               |
+  |             | Bar       | Vertical bar        |                                |               |
+  | **Up**      | Button    | Top-pointing arrow  | `Go up`                        |               |
+  | **Explore** | Button    | Eye icon            | `Open in file manager`         |               |
+  | **Bin**     | Button    | Standard iconic bin | `Expose the bin`               |               |
+  |             | Bar       | Vertical bar        |                                |               |
+  | **Update**  | Button    | Green play icon     | `Update the folder data`       |               |
+  | **Stop**    | Button    | Stop indicator      | `Stop scanning folders`        |               |
+  | **Total**   | Indicator | Volume capacity     | `Total capacity of the volume` | `Total at X:` |
+  | **Free**    | Indicator | Volume free space   | `Free space on the volume`     | `Free at X:`  |
+
+  The toolbar must show a vertical bar between **Save** and **Up**, and a vertical bar between **Bin** and **Update** / **Stop**.
+
+  Toolbar button icons must be rasterized at 24×24 pixels in the toolbar’s image list at 96 DPI. The implementation scales this nominal size with the toolbar host DPI so icons remain sharp on high-DPI displays. Icons must remain visually distinct and legible at that size.
+
+  The **Total** element must be implemented as a static text. The static text must be `Total at X:`. The `X` stands for the volume label (**current volume** letter or name); the text must also show total capacity for that volume.
+
+  The **Free** element must be implemented as a compound that contains the following nested elements:
+
+  - Static label
+  - Button
+
+  The **Total** and **Free** indicators are the *volume indicators* together.
+
+  If a drive indicator contains a duplicated colon, it must be reduced to a single colon. For example, the text `Total at C::` should be optimized to `Total at C:`.
+
+  The static label must be *Free at X:*. The *X* stands for the current volume letter or name.
+
+  The button must display the volume free space. When the user clicks on the button the volume free space updates.
+
+  When *Updating the Context Folder* finishes with a positive result, the program must refresh both volume indicators (**Total** and **Free**) from the current volume. The displayed total capacity and free space must reflect the volume state at the end of the update, not values left over from an earlier scan or folder open.
+
+  When *Moving a File System Object to the Bin* finishes with a positive result, the program must refresh the **Free** volume indicator from the current volume. The **Total** indicator must stay unchanged.
+
+
+  ### Treemap
+
+  #### Content
+
+  ##### Treemap Representation Principles
+
+  A treemap is a flat space-filling diagram built from one vector of values.
+
+  The treemap must start from one enclosing rectangle whose full area represents the total size of all represented values.
+
+  Values that are zero, negative, or non-finite are excluded from the diagram and do not contribute to `sum(v)`.
+
+  For each represented value `v_i`, the program must compute an area share `v_i / sum(v)` and assign a tile area equal to that share of the enclosing rectangle.
+
+  In the diagram model, if an allocated tile area falls below a minimum threshold (implementation-defined), the corresponding value may be merged into a residual tile (for example, `other (N items)`), where `N` is the count of merged values. This rule concerns area allocation among values, not the external rectangle in pixels.
+
+  Each tile must correspond to exactly one represented value, and all tiles must be at the same level (no nesting in this view).
+
+  Tile positions are determined by the layout algorithm (specified separately) and have no semantic meaning beyond packing; area is the primary quantitative encoding.
+
+  The layout algorithm should minimize tiles with extreme aspect ratios (for example, width-to-height ratio above `5:1`) because such shapes reduce readability and interaction quality.
+
+  Visual attributes of tiles (for example color and label) encode additional properties, as specified below.
+
+  Treemap diagrams are broadly used and described in widely available sources [Laubheimer], [Treemapping].
+
+
+  ##### Descriptor-to-Treemap Mapping
+
+  The treemap is derived from descriptor entries for file system objects nested immediately under the current context folder.
+
+  Let `N` be the count of those entries.
+
+  The treemap shows at most `treemap.maxTiles` tiles.
+
+  If `N` is not greater than `treemap.maxTiles`, each entry is represented by one tile.
+
+  If `N` is greater than `treemap.maxTiles`, the treemap must show:
+
+  - one tile for each of the `treemap.maxTiles - 1` largest entries by size;
+  - one clump tile that represents all remaining entries.
+
+  For equal sizes, ordering is implementation-defined.
+
+  Each tile’s area is proportional to the volume share of the represented entry (or represented clump sum).
+
+  File tiles must use the packing type recorded in the descriptor for the represented entry.
+
+  If a file system object shares less than `treemap.clumpThreshold` of the overall size of the context folder, it goes into the clump.
+
+
+  #### Tile Layout
+
+  ##### Padding and Clipping
+
+  The padding rectangle is the rectangle inside the tile’s external rectangle whose left edge is shifted inward by (Left padding), top edge by (Top padding), right edge by (Right padding), and bottom edge by (Bottom padding).
+
+  The following padding must be provided inside a tile.
+
+  | Tile Side      | Configuration Parameter     |
+  |----------------|-----------------------------|
+  | Left padding   | `treemap.tilePaddingLeft`   |
+  | Top padding    | `treemap.tilePaddingTop`    |
+  | Right padding  | `treemap.tilePaddingRight`  |
+  | Bottom padding | `treemap.tilePaddingBottom` |
+
+  When the tile content gets clipped, it must get clipped by the padding rectangle.
+
+
+  ##### Label Content
+
+  Every tile must show a label, unless it does not have enough space for it. A label must contain the following blocks:
+
+  - Heading
+  - Details block
+
+  The list above represents the normal order of blocks for the purpose of displaying them in visual media.
+
+  A heading must contain the name of the corresponding file system object.
+
+  The details block must contain the following lines on the corresponding file system object:
+
+  - Size
+  - Volume share
+
+  The list above represents the normal order of lines for the purpose of displaying them in visual media.
+
+  Size format must be:
+
+  - One fractional digit, one space, one suffix `TB`, `GB`, `MB`, or `KB` (largest unit that fits).
+  - Zero gives `0.0 KB`.
+
+  Volume share format must be:
+
+  - Up to 1 fractional digits, `%`.
+  - If it appears as `0.0%`, then give it one more fractional digit.
+  - If it is still `0.0%` or `0.00%`, then remove the percentage line.
+
+
+  #### Label Layout
+
+  ##### Text Orientation
+
+  Labels are displayed horizontally.
+
+  The lines of the label follow from top to bottom.
+
+
+  ##### Shortening Labels
+
+  A shortened label is a label that displays a placeholder in the middle instead of a longer substring. For example, `karabas-barabas.pdf` is a full label, while `karab...s.pdf` is a shortened label.
+         
+  The difference between the number of characters before and after the placeholder must not be larger than 1.
+
+  The program must use the placeholder provided in the `treemap.labelPlaceholder` configuration parameter.
+
+  The shortening-label quality rule is: the fewer characters replaced by a placeholder, the better the label. For example, `karabas-barabas.pdf` is better than `karabas...bas.pdf`, which is better than `karab...s.pdf`.
+
+
+  ##### Label Font Size
+
+  The minimal font size allowed for a label is provided in the `treemap.headingMinFontSize` configuration parameter.
+
+  The maximal font size allowed for a label is provided in the `treemap.headingMaxFontSize` configuration parameter.
+
+  Each integer font size from minimum to maximum is allowed.
+
+  The font-size quality rule is: the larger the font used to render a label, the better the label.
+
+
+  ##### Label Forms
+
+  The following forms are allowed for labels:
+
+  - Detailed
+  - Brief
+
+  A label in detailed form contains the following parts:
+
+  - Heading
+  - Details
+
+  A label in the brief form contains the following parts:
+
+  - Heading
+
+  The label-form quality rule is: a label in detailed form is better than a label in brief form.
+
+
+  ##### Formatting
+
+  The following linear sizes must apply to the parts of the tile label.
+
+  | Property                         | Value                                                 |
+  |----------------------------------|-------------------------------------------------------|
+  | Font                             | `treemap.tileFontName`                                |
+  | Heading font size                | Must be detected according to the font size rule      |
+  | Heading line height              | Heading font size * `treemap.headingLineHeight`       |
+  | Details font size                | Heading font size * `treemap.detailsFontSizeRatio`    |
+  | Details line height              | Details font size * `treemap.detailsLineHeight`       |
+  | Interval above the details block | Details font size * `treemap.aboveDetailsHeightRatio` |
+
+
+  A label fits the tile if it can be displayed within the tile’s external rectangle without being clipped.
+
+  The program must choose heading font size based on the following rules, listed from highest to lowest priority:
+
+  1. Label form quality rule
+  2. Shortening labels quality rule
+  3. Font size quality rule
+
+  If no allowed label variant fits a tile (including brief form, shortening, and minimal allowed font size), the tile must display `treemap.labelDummy`.
+
+
+  ##### Colors
+
+  Background and text colors must come only from *Treemap Configuration Parameters*. No separate fixed palette is specified outside that table.
+
+  The following colors must be applied to the packing type of the corresponding file system object.
+
+  | FSO Type | Packing Type  | Background Color              | Text Color                       |
+  |----------|---------------|-------------------------------|----------------------------------|
+  | Folder   | Native        | `treemap.nativeFolderBgColor` | `treemap.nativeFolderTextColor`  |
+  | Folder   | Packed folder | `treemap.packedFolderBgColor` | `treemap.packedFolderTextColor`  |
+  | File     | Native        | `treemap.nativeFileBgColor`   | `treemap.nativeFileTextColor`    |
+  | File     | Packed file   | `treemap.packedFileBgColor`   | `treemap.packedFileTextColor`    |
+  | Clump    | Native        | `treemap.nativeClumpBgColor`  | `treemap.nativeClumpTextColor`   |
+  | Clump    | Packed clump  | `treemap.packedClumpBgColor`  | `treemap.packedClumpTextColor`   |
+
+  The rules from the table above must be enforced for all labels. A label must not use any text color other than the color defined in the table above, and it must not use any locally applied background color. The label background must be transparent, so the tile background remains visible.
+
+
+  #### Behavior
+
+  ##### Mouse Pointers
+
+  The following mouse pointer shapes must be used when the mouse pointer moves above a tile.
+
+  | Corresponding File System Object | Mouse Pointer |
+  |----------------------------------|---------------|
+  | Non-empty folder                 | `pointer`     |
+  | Empty folder                     | `not-allowed` |
+  | Non-executable file              | `default`     |
+  | Executable file                  | `not-allowed` |
+
+
+  ##### Tooltips
+
+  If a tile does not display a label, then a tooltip must be provided for it.
+
+  If a tile displays a heading that received `...` after heading shortening, then a tooltip must be provided for it.
+
+  The tooltip must provide the following data on the file system object:
+
+  - Name
+  - Size
+
+
+  #### Layout
+
+  ##### Treemap Size
+
+  The treemap must occupy the full area allocated to it in the main window: the region below the toolbar and above the status bar, edge to edge.
+
+  The treemap must cover that entire region. White margins, unused border bands, letterboxing, or pillarboxing around the diagram are strictly forbidden.
+
+  Clipping the treemap is strictly forbidden. Every tile must be drawn wholly inside the treemap region, and the union of all tile external rectangles must exactly fill the treemap region with no gaps and no overflow past its edges.
+
+  When the main window is resized, the treemap must rescale to the new treemap region immediately. Tile layout must be recomputed from the new width and height; retaining a previous pixel layout after resize is not allowed.
+
+
+  ### Status Bar
+
+  Basically, the status bar is used to display the current status.
+
+  When the treemap is unset and the program is not scanning, the phrase *Choose a target folder* must be displayed.
+
+  When the treemap is complete, the path to the context folder must be displayed.
+
+  #### Windows
+
+  Paths displayed in the status bar must use the normal Windows path form. The separator must be backslash (`\`), not forward slash (`/`). A shortened path must keep backslashes (for example `C:\...\Projects\data`, not `C:/.../Projects/data`). This rule applies to the context-folder path when the treemap is complete and to the currently scanned folder path during scanning.
+
+
+  ### System Open Dialog Box
+
+  The open folder dialog box must include the following buttons:
+
+  - **Open**
+  - **Cancel**
+
+  > **IMPORTANT**
+  > Button Create New Folder is irrelevant.
+
+
+  ### System Save Dialog Box
+
+  The save dialog box must be the standard save dialog box of the operating system.
+
+  The save dialog box must include the following buttons:
+
+  - **Save**
+  - **Cancel**
+
+
+  ### Move to Bin Request Dialog Box
+
+  The remove dialog box must display the following elements: 
+
+  - Information message
+
+  The information message must be the following.
+
+  ```text
+  Are you sure you want to move <full path to file system object> to the Bin?
+
+  It will be removed from its current location but will remain available in the Bin. You can restore it later or delete it permanently from the Bin.
+  ```
+
+  The remove dialog box must include the following buttons:
+
+  - **Move to Bin**
+  - **Cancel** (this button must be default)
+
+  ## Handling Errors and Issues
+
+  ### Reasons for Handling Errors
+
+  Some failures must be reported explicitly so the user understands why an action did not complete and what they can do next.
+
+
+  ### Errors
+
+  Every error has the following properties:
+
+  - Code
+  - Reason
+  - Message
+
+  The code identifies the failure. The same class of failure keeps the same code across releases unless this specification changes. The code is suitable for documentation and for support references.
+
+  The reason states why the program assigns the code. It describes the technical or situational conditions that qualify the failure. The reason is part of the specification text in the table below.
+
+  The message is user-facing text paired with the code for that failure. It must convey the meaning defined for that code in the table below. Other languages may use different wording. The English *Message* column in the table still defines what each code must communicate.
+
+  The table below lists the value of each property for every defined failure.
+
+  | Code   | Reason | Message |
+  |--------|--------|---------|
+  | `001` | The user chose a folder that cannot be used as the scan root. | The folder could not be opened for scanning. Check that it still exists and that you have permission to read it. |
+  | `002` | Scanning did not finish successfully for a technical reason. | Scanning stopped because of an error. The treemap may be incomplete or empty. |
+  | `003` | The folder could not be opened in the system file manager. | The folder could not be opened in File Explorer. |
+  | `004` | The folder of interest does not exist. | The folder `%folder path%` is not found. Might you have deleted it in the meantime? |
+  | `005` | The file system object chosen for moving to the Bin no longer exists. | The `%object path%` does not exist. |
+  | `006` | The program has insufficient permissions to remove the file system object. | The `%object path%` cannot be moved to the bin. |
+  | `007` | The operating system did not move the file system object to the Bin. | Failed to move `%object path%` to the bin. |
+  | `008` | The treemap data could not be written to the file the user named. | The treemap data could not be saved to `%file path%`. |
+
+
+  ### Error Alert
+
+  The program opens error alerts to inform the user about an error.
+
+  An error alert must be a modal dialog box.
+
+  An error alert must contain the following elements:
+
+  - Error alert icon
+  - Error info block
+  - **OK** button
+
+  The error alert icon must be a yellow rectangle with a black exclamation mark inside.
+
+  An error info block must provide the following data:
+
+  - Error code
+  - Error message
+
+  The **OK** button must hold the focus.
+
+  An error alert must get closed when the user performs one of the following actions:
+
+  - Closes the error alert using the standard operating system method
+  - Clicks on the **OK** button.
+  - Presses one of the following keys:
+     - **Enter**
+     - **Esc**
+
+
+  ### Interruption Alert
+
+  An interruption alert must be a modal dialog box.
+
+  An interruption alert must contain the following elements:
+
+  - Interruption alert icon
+  - Interruption info block
+  - **OK** button
+
+  The interruption alert icon must be a blue rectangle with a white lowercase letter `i` centered inside. It must not reuse the error alert icon.
+
+  An interruption info block must provide the interruption message. No code is shown.
+
+  The **OK** button must hold the focus.
+
+  An interruption alert must get closed when the user performs one of the following actions:
+
+  - Closes the interruption alert using the standard operating system method
+  - Clicks on the **OK** button.
+  - Presses one of the following keys:
+     - **Enter**
+     - **Esc**
+
+
+  ### Settings Form
+
+  The program must provide a settings form.
+
+  The settings form must open when the user clicks Tools → Settings… in the menu.
+
+  The settings form must be implemented as one real grid. This is a strict requirement.
+
+  For this requirement:
+
+  - *Real grid* means one shared row/column layout for the entire form, with explicit cells, consistent column alignment across all rows, and direct in-cell editing.
+  - *Grid-like* means any imitation (for example: independent row panels, per-row ad-hoc layouts, fake table visuals, detached editors, editor overlays created on click, or any other non-grid substitute).
+
+  Only *real grid* implementations are allowed.
+
+  All *grid-like* implementations are strictly prohibited and non-compliant.
+
+  The settings form must not be implemented as tabs.
+
+  The settings form must not be implemented as a vertical stack of separate row panels where each row has its own independent layout.
+
+  All rows must belong to one shared grid layout so that the parameter-name column and the value column (and, for color rows, the swatch and picker columns) have identical column boundaries and widths across the whole form.
+
+  The grid must contain one row per configurable treemap parameter from Treemap Configuration Parameters that applies on the host operating system.
+
+  Host-OS-specific executable-extension parameters must appear in the settings grid only on the matching host operating system. Rows for other operating systems are redundant and must not be shown. On Windows, the grid must include `treemap.win.exeFiles` only; `treemap.linux.exeFiles` and `treemap.macos.exeFiles` must not appear.
+
+  Each row must include:
+
+  - Parameter name
+  - Value editor
+
+  The value editor must be permanently present in the corresponding value cell.
+
+  The program must not create, move, or show editors only after a click on a display cell.
+
+  The program must not use any detached editor area (including any bottom editor panel, side editor panel, floating editor, or out-of-cell editor host).
+
+  Rows for color parameters must also include:
+
+  - A live color preview (swatch)
+  - A color picker action
+
+  For color rows, the text value editor, swatch, and picker action must all be in the same grid row and must remain visible as cell content.
+
+  The row for `treemap.tileFontName` must include a drop-down list of fonts installed on the host system. The user must be able to select the tile font from that list.
+
+  When the settings form opens, it must display the current effective values for all listed parameters.
+
+  The settings form must provide the following actions:
+
+  - Apply: validate inputs, save valid values, and apply them immediately.
+  - OK: perform Apply, then close the form.
+  - Cancel: close the form without applying pending edits.
+  - Reset Treemap Defaults: restore all treemap parameter editors to built-in default values.
+
+  If at least one entered value is invalid, the form must not apply changes and must display a validation error.
+
+  The settings form must not apply partial updates: either all edited values are valid and applied, or none are applied.
+
+  Implementation gate before coding:
+
+  - The implementer must declare the exact control strategy before implementation.
+  - The declaration must explicitly state why the chosen approach is a *real grid* and not *grid-like*.
+  - If this declaration is missing, implementation is non-compliant.
+
+  Definition of done (strict acceptance checklist):
+
+  - The settings form uses one real grid layout for all rows and columns.
+  - Column boundaries are shared and consistent for all rows.
+  - Value editors are direct in-cell editors.
+  - No detached editor area exists (bottom, side, floating, or external).
+  - No editor overlay is created/moved on cell click.
+  - Color rows keep value editor, swatch, and picker in the same row.
+  - `treemap.tileFontName` is editable and supports both list selection and manual input.
+  - Validation blocks apply/ok when invalid and shows a clear error.
+  - Full settings save is atomic (all valid or none applied).
+  - On Windows, executable-extension rows list only `treemap.win.exeFiles`; Linux and macOS executable-extension rows are absent.
+
+  Automatic rejection criteria:
+
+  - Any implementation described as "grid-like".
+  - Any implementation that uses independent per-row layouts as a substitute for one shared grid.
+  - Any implementation that requires clicking a display cell to spawn/move an editor.
+  - Any implementation with a detached editor panel.
+
+  If any rejection criterion is present, the implementation must be rejected and treated as non-compliant.
+
+
+  ## Program Setup Configuration
+
+  ### Storing and Applying Configuration
+
+  #### OS-Agnostic
+
+  Program configuration includes a set of parameters that describe the behavior and appearance of a certain program installation.
+
+  Values of the configuration parameters must be stored in a configuration file.
+
+  The configuration file name must be `Erase & Rewrite.config.txt`.
+
+  The executable must contain a built-in default configuration.
+
+  On the first program start for a user, the program must check whether the configuration file exists in the configuration folder.
+
+  If the configuration file does not exist, the program must create the configuration file.
+
+  After creating the configuration file, the program must write the built-in default configuration into the configuration file.
+
+  On subsequent starts, the program must load configuration from the configuration file in the configuration folder.
+
+  A configuration file must be a human-readable text file.
+
+
+  #### Windows
+
+  The configuration folder path must be `%LocalAppData%\Erase & Rewrite`.
+
+
+  ### Configuration Parameter Structure
+
+  Each configuration parameter has the following properties:
+
+  - Name
+  - Description
+  - Value
+
+  Configuration parameters are split into groups.
+
+  The groups of configuration parameters are described below in this section.
+
+
+  ### Special Data Types
+
+  #### Percentage
+
+  *Percentage* is a share of a whole, stored and compared internally as a fraction of one. In configuration text it may be written in either of these forms, with no space inside the token:
+
+  - A number (with optional fractional part) immediately followed by `%`, meaning that many hundredths of the whole (examples: `1%`, `0.5%`, `12.5%`).
+  - A unitless decimal strictly between 0 and 1, meaning that fraction of the whole (examples: `0.01`, `0.125`).
+
+  The same logical value can be written both ways (`1%` and `0.01`). A parameter of type *Percentage* states which comparisons apply (for example strictly greater than zero). Whether values above 100% or at or below 0 are accepted is defined per parameter and by validation rules.
+
+
+  #### Generic size
+
+  A *generic size* is a numeric magnitude together with a unit of measure. In configuration text it is written as a single token: an optional leading sign, a decimal or whole number, immediately followed by a unit suffix with no space between the number and the unit. Examples: `12pt`, `3.5mm`, `105MB`. Which suffixes are valid depends on the parameter; unknown or disallowed combinations are rejected when configuration is loaded or validated.
+
+
+  #### TSize (Typographic Size)
+
+  *TSize* is a generic size used for on-screen layout: tile padding, minimum tile dimensions, font sizes, and similar quantities.
+
+  Each TSize uses one of the units below. The suffix column is the token that follows the number in configuration text.
+
+  | Unit        | Suffix |
+  |-------------|--------|
+  | Point       | `pt`   |
+  | Pixel       | `px`   |
+  | Millimeter  | `mm`   |
+  | Centimeter  | `cm`   |
+  | Inch        | `in`   |
+
+  Comparing two TSize values (for example `treemap.headingMinFontSize` vs `treemap.headingMaxFontSize`) is defined by the implementation: values are converted to a common internal unit, or invalid or inconsistent combinations are rejected.
+
+
+  #### Color
+
+  A *color* defines the red, green, and blue channels for on-screen drawing. In configuration text it is written as hex RGB: an optional leading `#` followed by exactly six hexadecimal digits `RRGGBB` (two digits per channel, in order R, then G, then B). Examples: `#80EF80`, `#000000`, `ffffff`. Unless a parameter states otherwise, alpha and other color notations are not used.
+
+
+
+  ### Scanning Configuration Parameters
+
+  | Name                      | Description                               | Default   | User |
+  |---------------------------|-------------------------------------------|-----------|------|
+  | `scanning.updateInterval` | How often the scanned path is updated     |   0.5 sec |  -   |
+
+
+  ### Treemap Configuration Parameters
+
+  Color, Percentage, and TSize are defined in Special Data Types.
+
+  The parameters `treemap.win.exeFiles`, `treemap.linux.exeFiles`, and `treemap.macos.exeFiles` are host-OS-specific. Only the parameter for the host operating system may appear in the settings grid (see Settings Form).
+
+  | Name | Description | Type | Constraints | Default | User |
+  |------|-------------|------|-------------|---------|------|
+  | `treemap.maxTiles` | Max tiles | Integer | ≥ 1 | 20 | + |
+  | `treemap.clumpThreshold` | Clump cutoff (share of total) | Percentage | > 0 | 1% | + |
+  | `treemap.tilePaddingLeft` | Padding left | TSize | ≥ 0 | 5pt | + |
+  | `treemap.tilePaddingTop` | Padding top | TSize | ≥ 0 | 5pt | + |
+  | `treemap.tilePaddingRight` | Padding right | TSize | ≥ 0 | 5pt | + |
+  | `treemap.tilePaddingBottom` | Padding bottom | TSize | ≥ 0 | 5pt | + |
+  | `treemap.minTileWidth` | Min tile width | TSize | > 0 | 50pt | + |
+  | `treemap.minTileHeight` | Min tile height | TSize | > 0 | 50pt | + |
+  | `treemap.nativeFolderBgColor` | Folder native fill | Color | — | #80ef80 | + |
+  | `treemap.nativeFolderTextColor` | Folder native text | Color | — | #000000 | + |
+  | `treemap.packedFolderBgColor` | Folder packed fill | Color | — | #06402b | + |
+  | `treemap.packedFolderTextColor` | Folder packed text | Color | — | #ffffff | + |
+  | `treemap.nativeFileBgColor` | File native fill | Color | — | #ffb09c | + |
+  | `treemap.nativeFileTextColor` | File native text | Color | — | #000000 | + |
+  | `treemap.packedFileBgColor` | File packed fill | Color | — | #900000 | + |
+  | `treemap.packedFileTextColor` | File packed text | Color | — | #ffffff | + |
+  | `treemap.nativeClumpBgColor` | Clump native fill | Color | — | #aaaaaa | + |
+  | `treemap.nativeClumpTextColor` | Clump native text | Color | — | #000000 | + |
+  | `treemap.packedClumpBgColor` | Clump packed fill | Color | — | #323232 | + |
+  | `treemap.packedClumpTextColor` | Clump packed text | Color | — | #ffffff | + |
+  | `treemap.labelPlaceholder` | Truncation placeholder | String | non-empty | `...` | + |
+  | `treemap.labelDummy` | Empty-layout label | String | non-empty | `...` | + |
+  | `treemap.tileFontName` | Tile font | String | non-empty | Segoe UI | + |
+  | `treemap.headingMaxFontSize` | Heading size max | TSize | > 0 | 30pt | + |
+  | `treemap.headingMinFontSize` | Heading size min | TSize | > 0; ≤ max | 8pt | + |
+  | `treemap.headingLineHeight` | Heading line height ratio | Float | > 0 | 1 | + |
+  | `treemap.detailsFontSizeRatio` | Details / heading size | Float | > 0 | 0.8 | + |
+  | `treemap.detailsLineHeight` | Details line height ratio | Float | > 0 | 1.5 | + |
+  | `treemap.aboveDetailsHeightRatio` | Gap above details / details size | Float | > 0 | 1 | + |
+  | `treemap.win.exeFiles` | Exe extensions (Windows) | String | comma tokens; optional `.` | bat, com, exe, dll, scr, msi | + |
+  | `treemap.linux.exeFiles` | Exe extensions (Linux) | String | same; empty → built-in | — | + |
+  | `treemap.macos.exeFiles` | Exe extensions (macOS) | String | same as Linux | — | + |
+  | `treemap.minSupervisedSize` | Minimum supervised size, MB | Integer | ≥ 1 | 10 | + |
+
+
+  ## Related Links
+
+  [Laubheimer]: https://www.nngroup.com/articles/treemaps/ "Page Laubheimer. Treemaps: Data Visualization of Complex Hierarchies"
+
+  [Treemapping]: https://en.wikipedia.org/wiki/Treemapping "Treemapping. Wikipedia."
+  ````
+</Callout>
