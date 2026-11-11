@@ -11,6 +11,11 @@
   "navigation": {
     "groups": [
       {
+        "group": "Start here",
+        "icon": "home",
+        "pages": []
+      },
+      {
         "group": "User manual",
         "pages": [
           {
