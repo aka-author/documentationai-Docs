@@ -1,8 +1,9 @@
 ---
 title: What Erase & Rewrite does
-description: See which folders fill your drive and move the files you no longer need to the Bin.
+description: >-
+  See which folders fill your drive and move the files you no longer need to the
+  Bin.
 ---
-
 ## Find what is filling your drive
 
 Erase & Rewrite shows you how the space on a drive is actually used. It draws the contents of a folder as a treemap, a picture made of rectangles where each rectangle stands for a folder or a file. When you spot something you do not need, you remove it by moving it to the Bin.
@@ -47,74 +48,59 @@ The toolbar also carries two readouts about the drive itself. `Total at X:` is t
 The program opens with your settings already loaded. The treemap area is empty and the status bar reads **Choose a target folder**. That is the program telling you it is waiting for you.
 
 <Steps>
-<Step title="Open the File menu">
+  <Step title="Open the File menu" title-type="p">
+    Choose **File** → **Open a Folder**, or press <kbd>Ctrl</kbd>+<kbd>O</kbd>.
+  </Step>
 
-Choose **File** → **Open a Folder**, or press <kbd>Ctrl</kbd>+<kbd>O</kbd>.
+  <Step title="Pick a folder" title-type="p">
+    Choose the folder you want to look inside. Start with something large, such as your Downloads folder or a drive letter, to see where space goes quickly.
+  </Step>
 
-</Step>
-<Step title="Pick a folder">
-
-Choose the folder you want to look inside. Start with something large, such as your Downloads folder or a drive letter, to see where space goes quickly.
-
-</Step>
-<Step title="Wait for the scan to finish">
-
-The program reads the folder and everything inside it. The treemap stays empty while it works, then appears complete when the scan is done, and the status bar shows the path to the folder you are looking at.
-
-</Step>
+  <Step title="Wait for the scan to finish" title-type="p">
+    The program reads the folder and everything inside it. The treemap stays empty while it works, then appears complete when the scan is done, and the status bar shows the path to the folder you are looking at.
+  </Step>
 </Steps>
 
 The full walkthrough, including how to stop a long scan, is in [Opening a folder and scanning](/user-manual/opening-a-folder).
 
-<Callout kind="info">
-
-The treemap does not update on its own. If files change on the drive after the scan, the picture you see is out of date. Choose **Inspect** → **Update** to scan the context folder again. See [Saving and updating](/user-manual/saving-and-updating).
-
+<Callout kind="info" collapsed="false">
+  The treemap does not update on its own. If files change on the drive after the scan, the picture you see is out of date. Choose **Inspect** → **Update** to scan the context folder again. See [Saving and updating](/user-manual/saving-and-updating).
 </Callout>
 
 ## In this manual
 
-<Columns cols={2}>
-<Card title="Opening a folder and scanning" href="/user-manual/opening-a-folder" icon="folder">
+<Columns cols="2">
+  <Card title="Opening a folder and scanning" href="/user-manual/opening-a-folder" icon="folder" horizontal="false">
+    Choose a folder, watch the scan run, and stop it if it takes too long.
+  </Card>
 
-Choose a folder, watch the scan run, and stop it if it takes too long.
+  <Card title="Reading the treemap" href="/user-manual/reading-the-treemap" icon="bar-chart" horizontal="false">
+    Understand tile sizes, clumps, and the colours on the map.
+  </Card>
 
-</Card>
-<Card title="Reading the treemap" href="/user-manual/reading-the-treemap" icon="bar-chart">
+  <Card title="Moving around" href="/user-manual/moving-around" icon="arrow-right" horizontal="false">
+    Step into subfolders, go back up, and explore in Explorer.
+  </Card>
 
-Understand tile sizes, clumps, and the colours on the map.
+  <Card title="Removing items safely" href="/user-manual/removing-items" icon="trash" horizontal="false">
+    Move items to the Bin and know exactly what happens next.
+  </Card>
 
-</Card>
-<Card title="Moving around" href="/user-manual/moving-around" icon="arrow-right">
+  <Card title="Saving and updating" href="/user-manual/saving-and-updating" icon="download" horizontal="false">
+    Save the folder you are viewing as a plain text file and refresh the map after files change.
+  </Card>
 
-Step into subfolders, go back up, and explore in Explorer.
+  <Card title="Settings" href="/user-manual/settings" icon="settings" horizontal="false">
+    Adjust how the treemap looks and how scanning behaves.
+  </Card>
 
-</Card>
-<Card title="Removing items safely" href="/user-manual/removing-items" icon="trash">
+  <Card title="Keyboard shortcuts" href="/user-manual/keyboard-shortcuts" icon="terminal" horizontal="false">
+    Work faster with the keys for open, update, and navigation.
+  </Card>
 
-Move items to the Bin and know exactly what happens next.
-
-</Card>
-<Card title="Saving and updating" href="/user-manual/saving-and-updating" icon="download">
-
-Save the folder you are viewing as a plain text file and refresh the map after files change.
-
-</Card>
-<Card title="Settings" href="/user-manual/settings" icon="settings">
-
-Adjust how the treemap looks and how scanning behaves.
-
-</Card>
-<Card title="Keyboard shortcuts" href="/user-manual/keyboard-shortcuts" icon="terminal">
-
-Work faster with the keys for open, update, and navigation.
-
-</Card>
-<Card title="Troubleshooting" href="/user-manual/troubleshooting" icon="help-circle">
-
-Fix a scan that will not start or a map that looks wrong.
-
-</Card>
+  <Card title="Troubleshooting" href="/user-manual/troubleshooting" icon="help-circle" horizontal="false">
+    Fix a scan that will not start or a map that looks wrong.
+  </Card>
 </Columns>
 
 For the complete rules behind every command and readout, the full behaviour is defined in the [functional specification](/specs/funcspec).
